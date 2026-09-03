@@ -85,6 +85,15 @@ export default function AdminDashboard() {
 
   useEffect(() => { load(); }, [load]);
 
+  useEffect(() => {
+    const handleClose = () => {
+      setConfirmConfig(c => ({ ...c, isOpen: false }));
+      setShowTeamWizard(false);
+    };
+    window.addEventListener('close-modals', handleClose);
+    return () => window.removeEventListener('close-modals', handleClose);
+  }, []);
+
   // ── USERS ──
   const addUser = async (e) => {
     e.preventDefault();

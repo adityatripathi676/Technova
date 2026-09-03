@@ -47,6 +47,12 @@ export default function Profile() {
     }
   }, [user]);
 
+  useEffect(() => {
+    const handleClose = () => setShowCropModal(false);
+    window.addEventListener('close-modals', handleClose);
+    return () => window.removeEventListener('close-modals', handleClose);
+  }, []);
+
   const handleAvatarSelect = (e) => {
     const file = e.target.files[0];
     if (!file) return;
