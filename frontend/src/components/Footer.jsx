@@ -1,5 +1,21 @@
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowRight, Activity, Users, Calendar, FileText, Shield, Instagram, Linkedin, Mail, ExternalLink } from 'lucide-react';
+import { ArrowRight, Activity, Users, Calendar, FileText, Shield, Mail, ExternalLink } from 'lucide-react';
+
+const InstagramIcon = ({ size = 24, color = "currentColor", strokeWidth = 2, ...props }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+  </svg>
+);
+
+const LinkedinIcon = ({ size = 24, color = "currentColor", strokeWidth = 2, ...props }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+    <rect x="2" y="9" width="4" height="12"></rect>
+    <circle cx="4" cy="4" r="2"></circle>
+  </svg>
+);
 
 export default function Footer() {
   const location = useLocation();
@@ -52,10 +68,10 @@ export default function Footer() {
               <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ffffff', marginBottom: '24px', textTransform: 'uppercase', letterSpacing: '0.15em', opacity: 0.8 }}>Connect</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                 <a href="https://instagram.com/technova_mriirs" target="_blank" rel="noreferrer" className="footer-link">
-                  <Instagram size={16}/> Instagram
+                  <InstagramIcon size={16}/> Instagram
                 </a>
                 <a href="https://linkedin.com/company/technova-mriirs" target="_blank" rel="noreferrer" className="footer-link">
-                  <Linkedin size={16}/> LinkedIn
+                  <LinkedinIcon size={16}/> LinkedIn
                 </a>
                 <a href="mailto:technova@mriirs.edu.in" className="footer-link">
                   <Mail size={16}/> Contact Us
