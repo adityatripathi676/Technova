@@ -10,6 +10,8 @@ import API from '../api/axios';
 import Navbar from '../components/Navbar';
 import CinematicBackground from '../components/CinematicBackground';
 import DragDropImageUpload from '../components/DragDropImageUpload';
+import ConfirmModal from '../components/ConfirmModal';
+import AddTeamWizard from '../components/AddTeamWizard';
 import { useAuth } from '../context/AuthContext';
 
 export default function AdminDashboard() {
@@ -60,6 +62,10 @@ export default function AdminDashboard() {
   const [colFilters, setColFilters] = useState({ email: '', role: '', action: '', details: '' });
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
 
+  // Modals & Wizards
+  const [confirmConfig, setConfirmConfig] = useState({ isOpen: false, title: '', message: '', type: 'danger', confirmText: 'Confirm', onConfirm: null });
+  const [showAddTeamWizard, setShowAddTeamWizard] = useState(false);
+
   const flash = useCallback((m) => {
     setMsg(m);
     if (flashTimer.current) clearTimeout(flashTimer.current);
@@ -84,29 +90,37 @@ export default function AdminDashboard() {
     try { await API.post('/admin/users', userForm); flash('✅ New Approver account provisioned'); setUserForm({ name: '', email: '', password: '' }); load(); }
     catch (err) { flash('❌ ' + (err.response?.data?.message || 'Failed to add approver')); }
   };
-  const deactivateUser = async (id) => {
-    if (!window.confirm('Deactivate this authority account?')) return;
-    try { await API.patch(`/admin/users/${id}/deactivate`); flash('✅ User account deactivated'); load(); }
-    catch (err) { flash('❌ ' + (err.response?.data?.message || 'Deactivation failed')); }
+  const deactivateUser = (id) => {
+    setConfirmConfig({
+      isOpen: true, title: 'Deactivate Account', message: 'Deactivate this authority account?', type: 'danger', confirmText: 'Deactivate',
+      onConfirm: async () => {
+        setConfirmConfig(c => ({ ...c, isOpen: false }));
+        try { await API.patch(`/admin/users/${id}/deactivate`); flash('✅ User account deactivated'); load(); }
+        catch (err) { flash('❌ ' + (err.response?.data?.message || 'Deactivation failed')); }
+      }
+    });
   };
   const startEditUser = (u) => {
     setEditUser(u._id);
     setEditUserForm({ name: u.name, email: u.email });
   };
-  const submitEditUser = async (e, id) => {
+  const submitEditUser = (e, id) => {
     e.preventDefault();
-    try {
-      await API.patch(`/admin/users/${id}`, editUserForm);
-      flash('✅ Approver details updated');
-      setEditUser(null);
-      load();
-    } catch (err) { 
-      const backendMsg = err.response?.data?.message;
-      const status = err.response?.status;
-      const sysMsg = err.message;
-      flash(`❌ Add failed: ${backendMsg || `[Status: ${status}] ${sysMsg}`}`);
-      console.error('Add team error:', err);
-    }
+    setConfirmConfig({
+      isOpen: true, title: 'Update Approver', message: 'Save changes to this authority account?', type: 'primary', confirmText: 'Save Changes',
+      onConfirm: async () => {
+        setConfirmConfig(c => ({ ...c, isOpen: false }));
+        try {
+          await API.patch(`/admin/users/${id}`, editUserForm);
+          flash('✅ Approver details updated');
+          setEditUser(null);
+          load();
+        } catch (err) { 
+          const backendMsg = err.response?.data?.message;
+          flash(`❌ Update failed: ${backendMsg || err.message}`);
+        }
+      }
+    });
   };
   const changePassword = async (e) => {
     e.preventDefault();
@@ -114,9 +128,13 @@ export default function AdminDashboard() {
     catch (err) { flash('❌ ' + (err.response?.data?.message || 'Password reset failed')); }
   };
 
-  const addTeam = async (e) => {
-    e.preventDefault();
-    try { await API.post('/admin/team', teamForm); flash('✅ Operational team member added'); setTeamForm({ name: '', role: '', email: '', phone: '', department: '', bio: '', image: '', linkedinUrl: '', githubUrl: '' }); load(); }
+  const handleAddTeamWizardSubmit = async (formData) => {
+    try { 
+      await API.post('/admin/team', formData); 
+      flash('✅ Operational team member added'); 
+      setShowAddTeamWizard(false);
+      load(); 
+    }
     catch (err) { flash('❌ ' + (err.response?.data?.message || 'Failed to add team member')); }
   };
 
@@ -143,26 +161,34 @@ export default function AdminDashboard() {
     });
   };
 
-  const submitEditTeam = async (e, id) => {
+  const submitEditTeam = (e, id) => {
     e.preventDefault();
-    try {
-      await API.patch(`/admin/team/${id}`, editTeamForm);
-      flash('✅ Team member details updated');
-      setEditTeam(null);
-      load();
-    } catch (err) { 
-      const backendMsg = err.response?.data?.message;
-      const status = err.response?.status;
-      const sysMsg = err.message;
-      flash(`❌ Update failed: ${backendMsg || `[Status: ${status}] ${sysMsg}`}`);
-      console.error('Update error:', err);
-    }
+    setConfirmConfig({
+      isOpen: true, title: 'Update Team Member', message: 'Are you sure you want to save changes to this team member?', type: 'primary', confirmText: 'Save Changes',
+      onConfirm: async () => {
+        setConfirmConfig(c => ({ ...c, isOpen: false }));
+        try {
+          await API.patch(`/admin/team/${id}`, editTeamForm);
+          flash('✅ Team member details updated');
+          setEditTeam(null);
+          load();
+        } catch (err) { 
+          const backendMsg = err.response?.data?.message;
+          flash(`❌ Update failed: ${backendMsg || err.message}`);
+        }
+      }
+    });
   };
 
-  const removeTeam = async (id) => {
-    if (!window.confirm('Permanently remove this team member from directory?')) return;
-    try { await API.delete(`/admin/team/${id}`); flash('✅ Team member permanently removed'); load(); }
-    catch (err) { flash('❌ Delete failed'); }
+  const removeTeam = (id) => {
+    setConfirmConfig({
+      isOpen: true, title: 'Remove Team Member', message: 'Permanently remove this team member from directory?', type: 'danger', confirmText: 'Remove',
+      onConfirm: async () => {
+        setConfirmConfig(c => ({ ...c, isOpen: false }));
+        try { await API.delete(`/admin/team/${id}`); flash('✅ Team member permanently removed'); load(); }
+        catch (err) { flash('❌ Delete failed'); }
+      }
+    });
   };
 
   // ── SOCIETIES ──
@@ -192,10 +218,15 @@ export default function AdminDashboard() {
       load();
     } catch (err) { flash('❌ ' + (err.response?.data?.message || 'Failed to add club')); }
   };
-  const removeClub = async (id) => {
-    if (!window.confirm('Deactivate this club entry? Existing event records remain intact.')) return;
-    try { await API.delete(`/admin/clubs/${id}`); flash('✅ Club removed'); load(); }
-    catch (err) { flash('❌ Delete failed'); }
+  const removeClub = (id) => {
+    setConfirmConfig({
+      isOpen: true, title: 'Deactivate Club', message: 'Deactivate this club entry? Existing event records remain intact.', type: 'danger', confirmText: 'Deactivate',
+      onConfirm: async () => {
+        setConfirmConfig(c => ({ ...c, isOpen: false }));
+        try { await API.delete(`/admin/clubs/${id}`); flash('✅ Club removed'); load(); }
+        catch (err) { flash('❌ Delete failed'); }
+      }
+    });
   };
 
   // ── FIELDS ──
@@ -215,10 +246,15 @@ export default function AdminDashboard() {
     }
     catch (err) { flash('❌ ' + (err.response?.data?.message || 'Failed to add field')); }
   };
-  const removeField = async (id) => {
-    if (!window.confirm('Delete this form field? This may affect existing event requests.')) return;
-    try { await API.delete(`/admin/fields/${id}`); flash('✅ Field deleted'); load(); }
-    catch (err) { flash('❌ Delete failed'); }
+  const removeField = (id) => {
+    setConfirmConfig({
+      isOpen: true, title: 'Delete Field', message: 'Delete this form field? This may affect existing event requests.', type: 'danger', confirmText: 'Delete',
+      onConfirm: async () => {
+        setConfirmConfig(c => ({ ...c, isOpen: false }));
+        try { await API.delete(`/admin/fields/${id}`); flash('✅ Field deleted'); load(); }
+        catch (err) { flash('❌ Delete failed'); }
+      }
+    });
   };
   const toggleField = async (id, enabled) => {
     try { await API.patch(`/admin/fields/${id}`, { enabled: !enabled }); load(); }
@@ -342,28 +378,15 @@ export default function AdminDashboard() {
           {/* ── TEAM TAB ── */}
           {tab === 'team' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="dashboard-grid">
-              <div className="glass-card">
-                <div className="section-title"><UserPlus size={20}/> Add Operational Officer</div>
-                <form onSubmit={addTeam} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                  <div className="form-grid form-grid-2">
-                    <div className="form-group"><label className="form-label">Full Name *</label><input placeholder="Full Name" value={teamForm.name} onChange={e => setTeamForm(f => ({ ...f, name: e.target.value }))} required /></div>
-                    <div className="form-group"><label className="form-label">Role Title *</label><input placeholder="President / Tech Lead / VP" value={teamForm.role} onChange={e => setTeamForm(f => ({ ...f, role: e.target.value }))} required /></div>
-                    <div className="form-group"><label className="form-label">Email Address *</label><input type="email" placeholder="officer@technova.com" value={teamForm.email} onChange={e => setTeamForm(f => ({ ...f, email: e.target.value }))} required /></div>
-                    <div className="form-group"><label className="form-label">Phone Number *</label><input placeholder="+91 9876543210" value={teamForm.phone} onChange={e => setTeamForm(f => ({ ...f, phone: e.target.value }))} required /></div>
-                    <div className="form-group"><label className="form-label">Department</label><input placeholder="CSE / IT / Operations" value={teamForm.department} onChange={e => setTeamForm(f => ({ ...f, department: e.target.value }))} /></div>
-                    <div className="form-group"><label className="form-label">Profile Image (Max 10MB)</label><DragDropImageUpload value={teamForm.image || ''} onChange={(val) => setTeamForm(f => ({ ...f, image: val }))} /></div>
-                  </div>
-                  <div className="form-group"><label className="form-label">Short Bio (shown on Leaders page)</label><textarea rows={3} placeholder="Brief 1-2 sentence bio visible on the public Leaders Directory…" value={teamForm.bio} onChange={e => setTeamForm(f => ({ ...f, bio: e.target.value }))} /></div>
-                  <div className="form-grid form-grid-2">
-                    <div className="form-group"><label className="form-label">LinkedIn URL</label><input placeholder="https://linkedin.com/in/username" value={teamForm.linkedinUrl} onChange={e => setTeamForm(f => ({ ...f, linkedinUrl: e.target.value }))} /></div>
-                    <div className="form-group"><label className="form-label">GitHub URL</label><input placeholder="https://github.com/username" value={teamForm.githubUrl} onChange={e => setTeamForm(f => ({ ...f, githubUrl: e.target.value }))} /></div>
-                  </div>
-                  <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '16px', borderRadius: 'var(--radius-xl)' }}>➕ Register Leader / Officer</button>
-                </form>
+              <div className="glass-card" style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div className="section-title" style={{ border: 'none', padding: 0, margin: 0, marginBottom: '8px' }}><Users size={20}/> Personnel Directory ({team.filter(m => m.isActive).length} Active)</div>
+                  <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Manage operational officers and their details.</p>
+                </div>
+                <button onClick={() => setShowAddTeamWizard(true)} className="btn btn-primary" style={{ padding: '12px 24px', borderRadius: 'var(--radius-xl)' }}><UserPlus size={18}/> Add Member</button>
               </div>
 
               <div className="glass-card">
-                <div className="section-title"><Users size={20}/> Personnel Directory ({team.filter(m => m.isActive).length} Active)</div>
                 {team.filter(m => m.isActive).length === 0 ? (
                   <div className="empty-state" style={{ padding: '60px 20px' }}><Users size={48} color="var(--text-muted)" style={{ margin: '0 auto 16px' }}/><p>No operational personnel added yet.</p></div>
                 ) : (
@@ -804,7 +827,9 @@ export default function AdminDashboard() {
 
         </div>
       </div>
+      
+      <ConfirmModal {...confirmConfig} onCancel={() => setConfirmConfig(c => ({ ...c, isOpen: false }))} />
+      <AddTeamWizard isOpen={showAddTeamWizard} onClose={() => setShowAddTeamWizard(false)} onSubmit={handleAddTeamWizardSubmit} />
     </>
   );
 }
-
