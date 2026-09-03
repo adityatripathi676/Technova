@@ -35,9 +35,9 @@ export default function LeadersPage() {
           </div>
 
           {loading ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '40px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '40px' }}>
               {[1,2,3].map(i => (
-                <div key={i} className="glass-card" style={{ height: '480px', opacity: 0.4, animation: 'pulse 2s infinite' }} />
+                <div key={i} className="glass-card" style={{ height: '480px', opacity: 0.4, animation: 'pulse 2s infinite', flex: '1 1 300px', maxWidth: '350px' }} />
               ))}
             </div>
           ) : leaders.length === 0 ? (
@@ -52,7 +52,7 @@ export default function LeadersPage() {
             <motion.div
               initial="hidden" animate="show"
               variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.15 } } }}
-              style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '40px' }}
+              style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '40px' }}
             >
               {leaders.map(leader => (
                 <motion.div
@@ -60,7 +60,7 @@ export default function LeadersPage() {
                   whileHover={{ y: -8 }}
                   key={leader._id}
                   className="glass-card"
-                  style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', borderRadius: 'var(--radius-lg)' }}
+                  style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column', borderRadius: 'var(--radius-lg)', flex: '1 1 300px', maxWidth: '350px' }}
                 >
                   <div style={{ width: '100%', height: '280px', position: 'relative', overflow: 'hidden', background: '#111' }}>
                     {leader.image ? (
