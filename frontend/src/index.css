@@ -7,3 +7,55 @@
   display: flex;
   flex-direction: column;
 }
+
+@media (max-width: 480px) {
+  h1[style] { font-size: 2rem !important; }
+  h2[style] { font-size: 1.6rem !important; }
+  .glass-card { padding: 16px !important; }
+  
+  /* Ensure flex rows wrap on very small screens */
+  .checkbox-row { flex-wrap: wrap; }
+  .navbar-right { gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .form-grid > div[style*="display: flex"] { flex-wrap: wrap; }
+}
+
+/* ─── LOGIN PAGE SPECIFIC ───────────────────────────────────────── */
+.login-split-layout {
+  display: flex;
+  width: 100%;
+  max-width: 1200px;
+  align-items: center;
+  gap: 80px;
+  padding: 0 24px;
+}
+
+.login-logo-section {
+  flex: 1.2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-form-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.mobile-logo-only {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .login-split-layout {
+    flex-direction: column;
+    gap: 0;
+  }
+  .login-logo-section {
+    display: none !important;
+  }
+  .mobile-logo-only {
+    display: flex !important;
+  }
+}
