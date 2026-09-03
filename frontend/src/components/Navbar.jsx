@@ -31,7 +31,9 @@ export default function Navbar() {
     <header className="navbar-wrapper">
       <nav className="navbar">
         <Link to={getBrandLink()} className="navbar-brand">
-          <div className="navbar-logo-icon"><Zap size={20} /></div>
+          <div className="navbar-logo-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src="/logo-bw.png" alt="Technova Logo" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+          </div>
           <div>
             <span className="font-heading" style={{ fontSize: '1.1rem', fontWeight: 900, letterSpacing: '-0.02em', color: '#ffffff' }}>TECHNOVA</span>
             <span className="hide-on-tablet" style={{ color: 'var(--text-muted)', fontSize: '0.7rem', display: 'block', fontWeight: 700, marginTop: '-2px', letterSpacing: '0.05em' }}>MANAV RACHNA INTERNATIONAL INSTITUTE OF RESEARCH AND STUDIES</span>
