@@ -202,7 +202,7 @@ export default function CoordinatorPortal() {
                         <label className="checkbox-row" style={{ color: '#fff' }}>
                           <input type="checkbox" checked={form.resources[key].checked} onChange={e => handleResourceCheck(key, e.target.checked)} />
                           <span className="checkbox-label">{label}</span>
-                          {key === 'additionalMediaCoverage' && <span className="badge" style={{ marginLeft: 'auto', fontSize: '0.7rem', background: 'rgba(245, 158, 11, 0.1)', color: 'var(--amber)' }}>Strict Approval</span>}
+                          {key === 'additionalMediaCoverage' && <span style={{ color: 'var(--amber)', marginLeft: '4px', fontWeight: 'bold' }}>*</span>}
                         </label>
                         {key === 'canopy' && form.resources.canopy.checked && (
                           <div style={{ marginTop: '12px', animation: 'fadeIn 0.2s ease-out' }}>
@@ -216,6 +216,10 @@ export default function CoordinatorPortal() {
                         )}
                       </div>
                     ))}
+                  </div>
+                  <div style={{ marginTop: '24px', fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
+                    <span style={{ color: 'var(--amber)', fontWeight: 'bold' }}>*</span>
+                    <span>Indicates that this resource requires strict approval from the administrative authority.</span>
                   </div>
                 </div>
 
