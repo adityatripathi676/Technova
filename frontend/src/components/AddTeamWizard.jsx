@@ -112,12 +112,6 @@ export default function AddTeamWizard({ isOpen, onClose, onSubmit, initialData }
     handleNext();
   };
 
-  const skipImage = () => {
-    setImageSrc(null);
-    setForm(f => ({ ...f, image: '' }));
-    handleNext();
-  };
-
   const finalSubmit = () => {
     onSubmit(form);
   };
@@ -260,9 +254,6 @@ export default function AddTeamWizard({ isOpen, onClose, onSubmit, initialData }
           ) : <div></div>}
           
           <div style={{ display: 'flex', gap: '12px' }}>
-            {step === 2 && !imageSrc && (
-              <button onClick={skipImage} className="btn btn-secondary">Skip Image</button>
-            )}
             {step < 4 ? (
               <button 
                 onClick={step === 2 && imageSrc ? saveImageAndNext : handleNext} 
