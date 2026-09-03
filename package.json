@@ -1,0 +1,13 @@
+{
+  "name": "technova",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:backend":  "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev":          "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "seed":         "cd backend && node scripts/seed.js",
+    "build":        "cd frontend && npm run build",
+    "install:all":  "cd backend && npm install && cd ../frontend && npm install"
+  }
+}

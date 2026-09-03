@@ -1,0 +1,25 @@
+# ── Node ──────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Environment (NEVER commit secrets) ───────────────────────────
+.env
+.env.local
+.env.*.local
+backend/.env
+
+# ── Vite / React build output ─────────────────────────────────────
+frontend/dist/
+frontend/.vite/
+
+# ── OS junk ──────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── IDE ───────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo

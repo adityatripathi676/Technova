@@ -1,0 +1,19 @@
+{
+  "name": "Technova – MRIIRS Tech Society",
+  "short_name": "Technova",
+  "description": "The official event management and logistics platform of Technova Technical Society, Manav Rachna International Institute of Research and Studies.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"]
+}

@@ -1,0 +1,130 @@
+import { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { LogOut, LogIn, Activity, Users, Calendar, FileText, Shield, Zap, Menu, X } from 'lucide-react';
+import NotificationButton from './NotificationButton';
+
+export default function Navbar() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const getBrandLink = () => {
+    if (!user) return '/';
+    if (user.role === 'admin') return '/admin';
+    if (user.role === 'approver') return '/approver';
+    return '/portal';
+  };
+
+  return (
+    <header className="navbar-wrapper">
+      <nav className="navbar">
+        <Link to={getBrandLink()} className="navbar-brand">
+          <div className="navbar-logo-icon"><Zap size={20} /></div>
+          <div>
+            <span className="font-heading" style={{ fontSize: '1.1rem', fontWeight: 900, letterSpacing: '-0.02em', color: '#ffffff' }}>TECHNOVA</span>
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem', display: 'block', fontWeight: 700, marginTop: '-2px', letterSpacing: '0.05em' }}>MANAV RACHNA INTERNATIONAL INSTITUTE OF RESEARCH AND STUDIES</span>
+          </div>
+        </Link>
+
+        <div className={`navbar-links ${mobileOpen ? 'mobile-open' : ''}`}>
+          {!user && (
+            <>
+              <Link to="/" className={`navbar-link ${location.pathname === '/' ? 'active' : ''}`} onClick={() => setMobileOpen(false)}>
+                <Activity size={16} /> Overview
+              </Link>
+              <Link to="/leaders" className={`navbar-link ${location.pathname === '/leaders' ? 'active' : ''}`} onClick={() => setMobileOpen(false)}>
+                <Users size={16} /> Our Leaders
+              </Link>
+              <Link to="/events" className={`navbar-link ${location.pathname === '/events' ? 'active' : ''}`} onClick={() => setMobileOpen(false)}>
+                <Calendar size={16} /> Events Directory
+              </Link>
+              <Link to="/portal" className={`navbar-link ${location.pathname === '/portal' ? 'active' : ''}`} onClick={() => setMobileOpen(false)}>
+                <FileText size={16} /> Request Event
+              </Link>
+            </>
+          )}
+
+          {user && user.role === 'approver' && (
+            <Link to="/approver" className={`navbar-link ${location.pathname === '/approver' ? 'active' : ''}`} onClick={() => setMobileOpen(false)}>
+              <Shield size={16} /> Approver Review Workspace
+            </Link>
+          )}
+
+          {user && user.role === 'admin' && (
+            <Link to="/admin" className={`navbar-link ${location.pathname === '/admin' ? 'active' : ''}`} onClick={() => setMobileOpen(false)}>
+              <Shield size={16} /> Admin Command Center
+            </Link>
+          )}
+
+          {/* Mobile Auth Section */}
+          <div className="mobile-auth-section">
+            {user ? (
+              <button
+                className="btn btn-ghost"
+                style={{ width: '100%', padding: '12px', justifyContent: 'center' }}
+                onClick={() => { handleLogout(); setMobileOpen(false); }}
+              >
+                Sign Out <LogOut size={16} />
+              </button>
+            ) : (
+              <Link to="/login" className="btn btn-primary" style={{ width: '100%', padding: '12px', justifyContent: 'center' }} onClick={() => setMobileOpen(false)}>
+                Sign In <LogIn size={16} />
+              </Link>
+            )}
+          </div>
+        </div>
+
+        <div className="navbar-right">
+          <NotificationButton />
+          
+          <div className="desktop-auth-section" style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+            {user ? (
+              <>
+                <div className="navbar-user-badge" style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.05)', padding: '6px 14px 6px 6px', borderRadius: '40px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  {user.profilePicture ? (
+                    <img
+                      src={user.profilePicture}
+                      alt={user.name}
+                      style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', border: '1px solid rgba(255,255,255,0.2)' }}
+                    />
+                  ) : (
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#ffffff', color: '#000000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem' }}>
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <span className="navbar-user-name" style={{ fontSize: '0.9rem', color: '#fff', fontWeight: 600 }}>{user.name}</span>
+                  <span className={`badge ${user.role === 'admin' ? 'badge-rejected' : 'badge-review'}`} style={{ fontSize: '0.65rem', padding: '2px 8px' }}>
+                    {user.role}
+                  </span>
+                </div>
+                <button
+                  className="btn btn-ghost"
+                  style={{ padding: '8px 16px', borderRadius: '40px' }}
+                  onClick={handleLogout}
+                >
+                  Sign Out <LogOut size={16} />
+                </button>
+              </>
+            ) : (
+              <Link to="/login" className="btn btn-primary" style={{ padding: '10px 24px', borderRadius: '40px' }}>
+                Sign In <LogIn size={16} />
+              </Link>
+            )}
+          </div>
+          
+          <button className="mobile-menu-btn" onClick={() => setMobileOpen(!mobileOpen)}>
+            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+      </nav>
+    </header>
+  );
+}
+
