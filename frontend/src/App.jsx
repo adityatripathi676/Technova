@@ -10,6 +10,7 @@ import CoordinatorPortal from './pages/CoordinatorPortal';
 import ApproverWorkspace from './pages/ApproverWorkspace';
 import AdminDashboard from './pages/AdminDashboard';
 import Profile from './pages/Profile';
+import GlobalShortcuts from './components/GlobalShortcuts';
 import './styles/theme.css';
 import InstallPWA from './components/InstallPWA';
 
@@ -49,6 +50,7 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <GlobalShortcuts />
         <AppRoutes />
         <InstallPWA />
       </BrowserRouter>
