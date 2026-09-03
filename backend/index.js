@@ -43,8 +43,13 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow same-origin (e.g. Vercel SSR) and whitelisted origins
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    // Allow same-origin (e.g. Vercel SSR), whitelisted origins, or any Vercel preview URL for this project
+    if (!origin || 
+        allowedOrigins.includes(origin) || 
+        (origin.includes('vercel.app') && origin.includes('technova'))) {
+      return callback(null, true);
+    }
+    console.warn(`[CORS] Blocked request from origin: ${origin}`);
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
