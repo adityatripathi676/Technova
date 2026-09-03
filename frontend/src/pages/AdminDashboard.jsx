@@ -9,6 +9,7 @@ import {
 import API from '../api/axios';
 import Navbar from '../components/Navbar';
 import CinematicBackground from '../components/CinematicBackground';
+import DragDropImageUpload from '../components/DragDropImageUpload';
 import { useAuth } from '../context/AuthContext';
 
 export default function AdminDashboard() {
@@ -219,7 +220,7 @@ export default function AdminDashboard() {
     <>
       <CinematicBackground />
       <Navbar />
-      <div className="page" style={{ position: 'relative', zIndex: 1 }}>
+      <div className="page" style={{ position: 'relative', zIndex: 1, paddingTop: '100px' }}>
         <div className="container-full" style={{ padding: '0 40px' }}>
 
           {/* HEADER */}
@@ -338,7 +339,7 @@ export default function AdminDashboard() {
                     <div className="form-group"><label className="form-label">Email Address *</label><input type="email" placeholder="officer@technova.com" value={teamForm.email} onChange={e => setTeamForm(f => ({ ...f, email: e.target.value }))} required /></div>
                     <div className="form-group"><label className="form-label">Phone Number *</label><input placeholder="+91 9876543210" value={teamForm.phone} onChange={e => setTeamForm(f => ({ ...f, phone: e.target.value }))} required /></div>
                     <div className="form-group"><label className="form-label">Department</label><input placeholder="CSE / IT / Operations" value={teamForm.department} onChange={e => setTeamForm(f => ({ ...f, department: e.target.value }))} /></div>
-                    <div className="form-group"><label className="form-label">Profile Image (Max 10MB)</label><input type="file" accept="image/*" onChange={e => handleImageUpload(e, setTeamForm)} style={{ padding: '12px' }} /></div>
+                    <div className="form-group"><label className="form-label">Profile Image (Max 10MB)</label><DragDropImageUpload value={teamForm.image || ''} onChange={(val) => setTeamForm(f => ({ ...f, image: val }))} /></div>
                   </div>
                   <div className="form-group"><label className="form-label">Short Bio (shown on Leaders page)</label><textarea rows={3} placeholder="Brief 1-2 sentence bio visible on the public Leaders Directory…" value={teamForm.bio} onChange={e => setTeamForm(f => ({ ...f, bio: e.target.value }))} /></div>
                   <div className="form-grid form-grid-2">
@@ -351,10 +352,10 @@ export default function AdminDashboard() {
 
               <div className="glass-card">
                 <div className="section-title"><Users size={20}/> Personnel Directory ({team.filter(m => m.isActive).length} Active)</div>
-                {team.length === 0 ? (
+                {team.filter(m => m.isActive).length === 0 ? (
                   <div className="empty-state" style={{ padding: '60px 20px' }}><Users size={48} color="var(--text-muted)" style={{ margin: '0 auto 16px' }}/><p>No operational personnel added yet.</p></div>
                 ) : (
-                  team.map(m => (
+                  team.filter(m => m.isActive).map(m => (
                     <div key={m._id} style={{ padding: '20px 0', borderBottom: '1px solid var(--border)' }}>
                       {editTeam === m._id ? (
                         <form onSubmit={(e) => submitEditTeam(e, m._id)} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -367,7 +368,7 @@ export default function AdminDashboard() {
                             <div className="form-group"><label className="form-label">Department</label><input value={editTeamForm.department} onChange={e => setEditTeamForm(f => ({ ...f, department: e.target.value }))} /></div>
                             <div className="form-group">
                               <label className="form-label">Profile Image (Max 10MB)</label>
-                              <input type="file" accept="image/*" onChange={e => handleImageUpload(e, setEditTeamForm)} style={{ padding: '12px' }} />
+                              <DragDropImageUpload value={editTeamForm.image || ''} onChange={(val) => setEditTeamForm(f => ({ ...f, image: val }))} />
                             </div>
                           </div>
                           <div className="form-group"><label className="form-label">Short Bio</label><textarea rows={2} value={editTeamForm.bio} onChange={e => setEditTeamForm(f => ({ ...f, bio: e.target.value }))} /></div>
@@ -396,8 +397,8 @@ export default function AdminDashboard() {
                           </div>
                           {m.isActive ? (
                             <div style={{ display: 'flex', gap: '8px' }}>
-                              <button className="btn" style={{ padding: '8px 16px', borderRadius: 'var(--radius-xl)' }} onClick={() => startEditTeam(m)}><Edit2 size={16}/> Edit</button>
-                              <button className="btn btn-danger" style={{ padding: '8px 16px', borderRadius: 'var(--radius-xl)' }} onClick={() => removeTeam(m._id)}><Trash2 size={16}/> Remove</button>
+                              <button className="btn" style={{ padding: '8px', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Edit" onClick={() => startEditTeam(m)}><Edit2 size={16}/></button>
+                              <button className="btn btn-danger" style={{ padding: '8px', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Remove" onClick={() => removeTeam(m._id)}><Trash2 size={16}/></button>
                             </div>
                           ) : (
                             <span className="badge" style={{ background: 'rgba(251, 113, 133, 0.1)', color: 'var(--rose)' }}>Removed</span>
