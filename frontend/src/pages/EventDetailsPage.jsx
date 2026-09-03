@@ -87,7 +87,7 @@ export default function EventDetailsPage() {
                     <Clock size={20} color="var(--primary)" />
                     <div>
                       <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Time</div>
-                      <div style={{ fontWeight: 600 }}>{event.startTime} - {event.endTime}</div>
+                      <div style={{ fontWeight: 600 }}>{event.eventDuration}</div>
                     </div>
                   </div>
                   {event.venue && (
@@ -110,10 +110,54 @@ export default function EventDetailsPage() {
                   )}
                 </div>
 
-                {event.description && (
+                {/* Submitter & Coordination Info */}
+                <div style={{ padding: '24px', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--radius-lg)', marginBottom: '32px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Users size={20} /> Coordination Details
+                  </h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+                    <div><div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Submitter</div><div style={{ fontWeight: 600 }}>{event.name} ({event.empId})</div></div>
+                    <div><div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Email</div><div style={{ fontWeight: 600 }}>{event.email}</div></div>
+                    <div><div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Department</div><div style={{ fontWeight: 600 }}>{event.department}</div></div>
+                    <div><div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Club Coordinator</div><div style={{ fontWeight: 600 }}>{event.clubCoordinator}</div></div>
+                  </div>
+                </div>
+
+                {/* Timestamps */}
+                <div style={{ display: 'flex', gap: '24px', padding: '16px 24px', background: 'rgba(0,0,0,0.2)', borderRadius: 'var(--radius-lg)', marginBottom: '32px' }}>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Submitted On</div>
+                    <div style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>{new Date(event.createdAt).toLocaleString('en-IN')}</div>
+                  </div>
+                  <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Last Response / Update</div>
+                    <div style={{ fontWeight: 600, color: 'var(--primary)' }}>{new Date(event.updatedAt).toLocaleString('en-IN')}</div>
+                  </div>
+                </div>
+
+                {event.eventDescription && (
                   <div style={{ padding: '24px', background: 'rgba(0,0,0,0.2)', borderRadius: 'var(--radius-lg)', marginBottom: '32px' }}>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700 }}>Description</div>
-                    <p style={{ lineHeight: 1.7, color: 'var(--text-secondary)', textAlign: 'justify' }}>{event.description}</p>
+                    <p style={{ lineHeight: 1.7, color: 'var(--text-secondary)', textAlign: 'justify', whiteSpace: 'pre-wrap' }}>{event.eventDescription}</p>
+                  </div>
+                )}
+
+                {event.additionalRequirement && (
+                  <div style={{ padding: '24px', background: 'rgba(245,158,11,0.05)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 'var(--radius-lg)', marginBottom: '32px' }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--amber)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700 }}>Special Instructions / Additional Requirements</div>
+                    <p style={{ lineHeight: 1.7, color: 'var(--text-secondary)', textAlign: 'justify', whiteSpace: 'pre-wrap' }}>{event.additionalRequirement}</p>
+                  </div>
+                )}
+
+                {event.selectedSocieties && event.selectedSocieties.length > 0 && (
+                  <div style={{ marginBottom: '32px' }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700 }}>Collaborating Societies</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                      {event.selectedSocieties.map(soc => (
+                        <span key={soc} className="badge" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff' }}>{soc}</span>
+                      ))}
+                    </div>
                   </div>
                 )}
 
@@ -124,10 +168,20 @@ export default function EventDetailsPage() {
                     </h3>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
                       {Object.entries(event.resources).map(([dept, data]) => {
-                        if (!data.requested) return null;
+                        if (!data.checked) return null;
                         return (
-                          <div key={dept} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 'var(--radius-md)' }}>
-                            <div style={{ fontWeight: 600, textTransform: 'capitalize' }}>{dept.replace(/([A-Z])/g, ' $1').trim()}</div>
+                          <div key={dept} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '16px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 'var(--radius-md)' }}>
+                            <div>
+                              <div style={{ fontWeight: 600, textTransform: 'capitalize' }}>
+                                {dept.replace(/([A-Z])/g, ' $1').trim()}
+                                {data.count > 0 && <span style={{ marginLeft: '8px', fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 500 }}>x{data.count}</span>}
+                              </div>
+                              {data.feedback && (
+                                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '8px', fontStyle: 'italic' }}>
+                                  "{data.feedback}"
+                                </div>
+                              )}
+                            </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>
                               {getStatusIcon(data.status)}
                               <span style={{ 
