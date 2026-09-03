@@ -41,15 +41,11 @@ export default function Login() {
           >
             <div style={{ textAlign: 'center', marginBottom: '32px' }}>
               <div style={{
-                width: '56px', height: '56px',
+                width: '64px', height: '64px',
                 margin: '0 auto 16px',
-                borderRadius: '50%',
-                background: '#ffffff',
-                color: '#000000',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: 'var(--shadow-raised)'
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
               }}>
-                <Zap size={24} />
+                <img src="/logo-color.png" alt="Technova Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
               </div>
               <h1 style={{ fontSize: '1.8rem', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.02em' }}>
                 Sign In
