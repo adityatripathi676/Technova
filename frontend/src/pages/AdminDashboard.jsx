@@ -4,7 +4,7 @@ import {
   Users, ShieldCheck, Landmark, FormInput, ScrollText, 
   UserPlus, Key, UserX, UserCheck, Edit2, Check, X, 
   Trash2, PlusCircle, Building2, BookType, ToggleLeft, ToggleRight,
-  Filter, Search, Calendar, Linkedin, Github, Mail
+  Filter, Search, Calendar, Briefcase, Code, Mail
 } from 'lucide-react';
 import API from '../api/axios';
 import Navbar from '../components/Navbar';
@@ -399,13 +399,13 @@ export default function AdminDashboard() {
                                 {m.linkedinUrl && (
                                   <>
                                     <span>·</span>
-                                    <a href={m.linkedinUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center' }} title="LinkedIn"><Linkedin size={14}/></a>
+                                    <a href={m.linkedinUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center' }} title="LinkedIn"><Briefcase size={14}/></a>
                                   </>
                                 )}
                                 {m.githubUrl && (
                                   <>
                                     <span>·</span>
-                                    <a href={m.githubUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center' }} title="GitHub"><Github size={14}/></a>
+                                    <a href={m.githubUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center' }} title="GitHub"><Code size={14}/></a>
                                   </>
                                 )}
                               </div>
