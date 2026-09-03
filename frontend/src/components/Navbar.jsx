@@ -34,16 +34,19 @@ export default function Navbar() {
         </Link>
 
         <div className={`navbar-links ${mobileOpen ? 'mobile-open' : ''}`}>
+          {/* Shared Links for Everyone */}
+          <Link to="/" className={`navbar-link ${location.pathname === '/' ? 'active' : ''}`} onClick={() => setMobileOpen(false)}>
+            <Activity size={16} /> Overview
+          </Link>
+          <Link to="/events" className={`navbar-link ${location.pathname === '/events' ? 'active' : ''}`} onClick={() => setMobileOpen(false)}>
+            <Calendar size={16} /> Events Directory
+          </Link>
+
+          {/* Links for Guests / Unauthenticated Users */}
           {!user && (
             <>
-              <Link to="/" className={`navbar-link ${location.pathname === '/' ? 'active' : ''}`} onClick={() => setMobileOpen(false)}>
-                <Activity size={16} /> Overview
-              </Link>
               <Link to="/leaders" className={`navbar-link ${location.pathname === '/leaders' ? 'active' : ''}`} onClick={() => setMobileOpen(false)}>
                 <Users size={16} /> Our Leaders
-              </Link>
-              <Link to="/events" className={`navbar-link ${location.pathname === '/events' ? 'active' : ''}`} onClick={() => setMobileOpen(false)}>
-                <Calendar size={16} /> Events Directory
               </Link>
               <Link to="/portal" className={`navbar-link ${location.pathname === '/portal' ? 'active' : ''}`} onClick={() => setMobileOpen(false)}>
                 <FileText size={16} /> Request Event
@@ -51,6 +54,7 @@ export default function Navbar() {
             </>
           )}
 
+          {/* Role-specific Workspaces */}
           {user && user.role === 'approver' && (
             <Link to="/approver" className={`navbar-link ${location.pathname === '/approver' ? 'active' : ''}`} onClick={() => setMobileOpen(false)}>
               <Shield size={16} /> Approver Review Workspace
@@ -84,7 +88,7 @@ export default function Navbar() {
         <div className="navbar-right">
           <NotificationButton />
           
-          <div className="desktop-auth-section" style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+          <div className="desktop-auth-section" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             {user ? (
               <>
                 <div className="navbar-user-badge" style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.05)', padding: '6px 14px 6px 6px', borderRadius: '40px', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -99,8 +103,8 @@ export default function Navbar() {
                       {user.name.charAt(0).toUpperCase()}
                     </div>
                   )}
-                  <span className="navbar-user-name" style={{ fontSize: '0.9rem', color: '#fff', fontWeight: 600 }}>{user.name}</span>
-                  <span className={`badge ${user.role === 'admin' ? 'badge-rejected' : 'badge-review'}`} style={{ fontSize: '0.65rem', padding: '2px 8px' }}>
+                  <span className="navbar-user-name hide-on-tablet" style={{ fontSize: '0.9rem', color: '#fff', fontWeight: 600 }}>{user.name}</span>
+                  <span className={`badge ${user.role === 'admin' ? 'badge-rejected' : 'badge-review'} hide-on-tablet`} style={{ fontSize: '0.65rem', padding: '2px 8px' }}>
                     {user.role}
                   </span>
                 </div>
@@ -108,8 +112,9 @@ export default function Navbar() {
                   className="btn btn-ghost"
                   style={{ padding: '8px 16px', borderRadius: '40px' }}
                   onClick={handleLogout}
+                  title="Sign Out"
                 >
-                  Sign Out <LogOut size={16} />
+                  <span className="hide-on-tablet">Sign Out</span> <LogOut size={16} />
                 </button>
               </>
             ) : (
