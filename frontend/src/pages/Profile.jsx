@@ -148,6 +148,7 @@ export default function Profile() {
                   aspect={1}
                   cropShape="round"
                   showGrid={false}
+                  restrictPosition={false}
                   onCropChange={setCrop}
                   onCropComplete={onCropComplete}
                   onZoomChange={setZoom}
@@ -163,13 +164,14 @@ export default function Profile() {
                     <input
                       type="range"
                       value={zoom}
-                      min={1}
+                      min={0.1}
                       max={3}
                       step={0.1}
                       aria-labelledby="Zoom"
                       onChange={(e) => setZoom(e.target.value)}
                       style={{ flex: 1, cursor: 'pointer', accentColor: 'var(--blue)' }}
                     />
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', minWidth: '40px', textAlign: 'right' }}>x{Number(zoom).toFixed(1)}</span>
                   </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -184,6 +186,7 @@ export default function Profile() {
                       onChange={(e) => setRotation(e.target.value)}
                       style={{ flex: 1, cursor: 'pointer', accentColor: 'var(--blue)' }}
                     />
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', minWidth: '40px', textAlign: 'right' }}>{rotation}°</span>
                   </div>
 
                 </div>
@@ -199,7 +202,7 @@ export default function Profile() {
       </AnimatePresence>
 
       <div className="page" style={{ position: 'relative', zIndex: 1 }}>
-        <div className="container-full" style={{ padding: '0 40px', maxWidth: '1200px', margin: '0 auto' }}>
+        <div className="container-full" style={{ padding: '0 5vw', maxWidth: '1200px', margin: '0 auto' }}>
           <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '20px' }}>
             <div>
               <h1 style={{ fontSize: '3rem', color: '#fff' }}>My Profile</h1>
@@ -223,7 +226,7 @@ export default function Profile() {
             </motion.div>
           )}
 
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="dashboard-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', alignItems: 'start' }}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="dashboard-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', alignItems: 'start' }}>
             
             {/* Identity Module */}
             <div className="glass-card" style={{ display: 'flex', flexDirection: 'column' }}>
