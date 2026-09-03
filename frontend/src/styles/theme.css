@@ -511,6 +511,11 @@ tbody tr:hover { background: rgba(255,255,255,0.03); }
   display: none;
 }
 
+/* Hide mobile-only auth section by default on desktop */
+.mobile-auth-section {
+  display: none;
+}
+
 /* ─── DASHBOARD GRID ────────────────────────────────────────────── */
 .dashboard-grid {
   display: grid;
