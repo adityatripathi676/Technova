@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams, Navigate } from 'react-router-dom';
+import { useSearchParams, Navigate, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   FileText, Search, CheckCircle, Package, Send, Building2, MapPin, 
-  CalendarDays, Clock, LayoutDashboard, UserCircle, AlertCircle, MessageCircle 
+  CalendarDays, Clock, LayoutDashboard, UserCircle, AlertCircle, MessageCircle, ArrowRight
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import API from '../api/axios';
@@ -31,7 +31,8 @@ const INITIAL_RESOURCES = Object.fromEntries(
 export default function CoordinatorPortal() {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
-  const [tab, setTab] = useState(searchParams.get('tab') === 'track' ? 'track' : 'submit');
+  const navigate = useNavigate();
+  const [tab, setTab] = useState(searchParams.get('tab') === 'track' ? 'track' : 'request');
   const [clubs, setClubs] = useState([]);
   const [societies, setSocieties] = useState([]);
   const [form, setForm] = useState({
@@ -294,56 +295,13 @@ export default function CoordinatorPortal() {
                     </div>
                   </div>
 
-                  {trackedEvent.overallFeedback && (
-                    <div style={{ padding: '20px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 'var(--radius-lg)', marginBottom: '32px', color: 'var(--text-primary)', lineHeight: 1.6 }}>
-                      <MessageCircle size={18} style={{ display: 'inline', marginRight: 8, color: 'var(--primary)' }}/>
-                      <strong>Directives:</strong> {trackedEvent.overallFeedback}
-                    </div>
-                  )}
-
-                  <div className="section-title"><CheckCircle size={20}/> Resource Clearances</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    {Object.entries(RESOURCE_LABELS).map(([key, label]) => {
-                      const r = trackedEvent.resources?.[key];
-                      if (!r?.checked) return null;
-                      return (
-                        <div key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', background: 'rgba(0,0,0,0.3)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                          <div>
-                            <div style={{ fontWeight: 800, color: '#fff', fontSize: '1.05rem' }}>{label}</div>
-                            {r.count > 0 && <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '4px' }}>Quantity: {r.count}</div>}
-                            {r.feedback && <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '8px' }}>💬 {r.feedback}</div>}
-                          </div>
-                          <StatusBadge status={r.status} />
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {trackedEvent.assignedContact?.name && (
-                    <>
-                      <div className="divider" style={{ margin: '40px 0' }} />
-                      <div className="section-title"><UserCircle size={20}/> Operational Contact</div>
-                      <ContactCard contact={trackedEvent.assignedContact} />
-                    </>
-                  )}
-
-                  {trackedEvent.updates?.length > 0 && (
-                    <>
-                      <div className="divider" style={{ margin: '40px 0' }} />
-                      <div className="section-title"><AlertCircle size={20}/> Network Bulletins</div>
-                      {trackedEvent.updates.map(u => (
-                        <div key={u._id} style={{ padding: '20px', background: 'rgba(0,0,0,0.3)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)', marginBottom: '16px' }}>
-                          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '12px' }}>
-                            <span className="badge" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff' }}>{u.updateType}</span>
-                            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{new Date(u.targetDate).toLocaleDateString('en-IN')}</span>
-                          </div>
-                          <div style={{ fontWeight: 800, color: '#fff', fontSize: '1.1rem', marginBottom: '8px' }}>{u.title}</div>
-                          <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.6 }}>{u.message}</div>
-                          <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>Authorized by {u.postedByName}</div>
-                        </div>
-                      ))}
-                    </>
-                  )}
+                  <button
+                    className="btn btn-ghost"
+                    style={{ marginTop: '24px', width: '100%', padding: '14px', borderRadius: 'var(--radius-lg)' }}
+                    onClick={() => navigate(`/track/${trackedEvent.eventId}`)}
+                  >
+                    View Full Details & Announcements <ArrowRight size={16} />
+                  </button>
                 </motion.div>
               )}
 
