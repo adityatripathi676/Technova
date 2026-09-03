@@ -71,14 +71,32 @@ app.use('/api/team',          require('./routes/team'));  // public read-only (n
 app.use('/api/notifications', require('./routes/notifications'));
 
 // ─── 10. HEALTH CHECK (no sensitive info) ────────────────────────────
-app.get('/api/health', (req, res) => res.json({ 
-  status: 'ok',
-  env: {
-    hasMongo: !!process.env.MONGODB_URI,
-    hasJwt: !!process.env.JWT_SECRET,
-    hasVapid: !!process.env.VAPID_PUBLIC_KEY
+const mongoose = require('mongoose');
+app.get('/api/health', async (req, res) => {
+  try {
+    const dbState = mongoose.connection.readyState;
+    // readyState: 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
+    let dbPing = 'failed';
+    if (dbState === 1) {
+      // Try a simple ping
+      await mongoose.connection.db.admin().ping();
+      dbPing = 'success';
+    }
+    
+    res.json({ 
+      status: 'ok',
+      dbState,
+      dbPing,
+      env: {
+        hasMongo: !!process.env.MONGODB_URI,
+        hasJwt: !!process.env.JWT_SECRET,
+        hasVapid: !!process.env.VAPID_PUBLIC_KEY
+      }
+    });
+  } catch (err) {
+    res.json({ status: 'error', error: err.message, dbState: mongoose.connection.readyState });
   }
-}));
+});
 
 // ─── 11. 404 FALLBACK (before error handler) ──────────────────────────
 app.use('/api/*', (req, res) => res.status(404).json({ message: 'API route not found' }));
