@@ -100,7 +100,13 @@ export default function AdminDashboard() {
       flash('✅ Approver details updated');
       setEditUser(null);
       load();
-    } catch (err) { flash('❌ ' + (err.response?.data?.message || 'Update failed')); }
+    } catch (err) { 
+      const backendMsg = err.response?.data?.message;
+      const status = err.response?.status;
+      const sysMsg = err.message;
+      flash(`❌ Add failed: ${backendMsg || `[Status: ${status}] ${sysMsg}`}`);
+      console.error('Add team error:', err);
+    }
   };
   const changePassword = async (e) => {
     e.preventDefault();
@@ -144,7 +150,13 @@ export default function AdminDashboard() {
       flash('✅ Team member details updated');
       setEditTeam(null);
       load();
-    } catch (err) { flash('❌ ' + (err.response?.data?.message || 'Update failed')); }
+    } catch (err) { 
+      const backendMsg = err.response?.data?.message;
+      const status = err.response?.status;
+      const sysMsg = err.message;
+      flash(`❌ Update failed: ${backendMsg || `[Status: ${status}] ${sysMsg}`}`);
+      console.error('Update error:', err);
+    }
   };
 
   const removeTeam = async (id) => {

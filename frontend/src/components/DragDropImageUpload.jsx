@@ -18,7 +18,7 @@ export default function DragDropImageUpload({ value, onChange, maxSizeMB = 10 })
         let height = img.height;
         
         // Max dimensions
-        const MAX_DIM = 1024;
+        const MAX_DIM = 800;
         if (width > height) {
           if (width > MAX_DIM) {
             height *= MAX_DIM / width;
@@ -36,8 +36,8 @@ export default function DragDropImageUpload({ value, onChange, maxSizeMB = 10 })
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
 
-        // Compress to JPEG with 0.7 quality to guarantee it's small enough for Vercel/MongoDB limits
-        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+        // Compress to JPEG with 0.5 quality to guarantee it's small enough for Vercel/MongoDB limits
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.5);
         setIsProcessing(false);
         onChange(compressedBase64);
       };
