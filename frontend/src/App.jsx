@@ -12,6 +12,7 @@ const CoordinatorPortal = lazy(() => import('./pages/CoordinatorPortal'));
 const ApproverWorkspace = lazy(() => import('./pages/ApproverWorkspace'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const Profile = lazy(() => import('./pages/Profile'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 import GlobalShortcuts from './components/GlobalShortcuts';
 import './styles/theme.css';
@@ -45,7 +46,7 @@ function AppRoutes() {
           <ProtectedRoute><Profile /></ProtectedRoute>
         } />
         <Route path="/dashboard" element={<RoleRedirect />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>
   );
