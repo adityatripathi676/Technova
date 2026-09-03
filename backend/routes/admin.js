@@ -191,7 +191,7 @@ router.post('/team', async (req, res) => {
       phone:       sanitize(phone).slice(0, 20),
       department:  sanitize(department || '').slice(0, 100),
       bio:         sanitize(bio || '').slice(0, 500),
-      image:       typeof image === 'string' ? image.trim().slice(0, 500) : '',
+      image:       typeof image === 'string' ? image.trim() : '',
       linkedinUrl: typeof linkedinUrl === 'string' ? linkedinUrl.trim().slice(0, 300) : '',
       githubUrl:   typeof githubUrl === 'string' ? githubUrl.trim().slice(0, 300) : '',
     });
@@ -210,21 +210,63 @@ router.post('/team', async (req, res) => {
   }
 });
 
+router.patch('/team/:id', async (req, res) => {
+  try {
+    const { name, role, email, phone, department, bio, image, linkedinUrl, githubUrl } = req.body;
+
+    const member = await TeamMember.findById(req.params.id);
+    if (!member) return res.status(404).json({ message: 'Member not found' });
+
+    if (name) member.name = sanitize(name).slice(0, 100);
+    if (role) member.role = sanitize(role).slice(0, 100);
+    
+    if (email) {
+      const emailRegex = /^[^\s@]{1,64}@[^\s@]{1,255}\.[^\s@]{1,63}$/;
+      if (!emailRegex.test(email)) return res.status(400).json({ message: 'Invalid email format' });
+      member.email = email.toLowerCase().trim();
+    }
+    
+    if (phone) {
+      const phoneRegex = /^\+?[\d\s\-()]{7,20}$/;
+      if (!phoneRegex.test(phone)) return res.status(400).json({ message: 'Invalid phone number format' });
+      member.phone = sanitize(phone).slice(0, 20);
+    }
+
+    if (department !== undefined) member.department = sanitize(department).slice(0, 100);
+    if (bio !== undefined) member.bio = sanitize(bio).slice(0, 500);
+    if (image !== undefined) member.image = typeof image === 'string' ? image.trim() : '';
+    if (linkedinUrl !== undefined) member.linkedinUrl = typeof linkedinUrl === 'string' ? linkedinUrl.trim().slice(0, 300) : '';
+    if (githubUrl !== undefined) member.githubUrl = typeof githubUrl === 'string' ? githubUrl.trim().slice(0, 300) : '';
+
+    await member.save();
+
+    await AuditLog.create({
+      actorEmail: req.user.email,
+      actorRole:  'admin',
+      action:     'EDIT_MEMBER',
+      details:    `Edited member: ${member.name}`,
+    });
+
+    res.json(member);
+  } catch (err) {
+    console.error('[Admin/team PATCH]', err);
+    res.status(500).json({ message: 'An error occurred.' });
+  }
+});
+
 router.delete('/team/:id', async (req, res) => {
   try {
-    const member = await TeamMember.findByIdAndUpdate(
-      req.params.id, { isActive: false }, { new: true }
-    );
+    const member = await TeamMember.findByIdAndDelete(req.params.id);
     if (!member) return res.status(404).json({ message: 'Member not found' });
 
     await AuditLog.create({
       actorEmail: req.user.email,
       actorRole:  'admin',
       action:     'REMOVE_MEMBER',
-      details:    `Removed: ${member.name}`,
+      details:    `Permanently removed: ${member.name}`,
     });
 
-    res.json({ message: 'Team member removed' });
+    res.json({ message: 'Team member permanently removed' });
   } catch (err) {
     console.error('[Admin/team DELETE]', err);
     res.status(500).json({ message: 'An error occurred.' });

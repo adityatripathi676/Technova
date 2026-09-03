@@ -26,6 +26,8 @@ export default function AdminDashboard() {
 
   const [team, setTeam] = useState([]);
   const [teamForm, setTeamForm] = useState({ name: '', role: '', email: '', phone: '', department: '', bio: '', image: '', linkedinUrl: '', githubUrl: '' });
+  const [editTeam, setEditTeam] = useState(null);
+  const [editTeamForm, setEditTeamForm] = useState({ name: '', role: '', email: '', phone: '', department: '', bio: '', image: '', linkedinUrl: '', githubUrl: '' });
 
   // Clubs & Societies (separate)
   const [clubs, setClubs] = useState([]);
@@ -110,9 +112,43 @@ export default function AdminDashboard() {
     try { await API.post('/admin/team', teamForm); flash('✅ Operational team member added'); setTeamForm({ name: '', role: '', email: '', phone: '', department: '', bio: '', image: '', linkedinUrl: '', githubUrl: '' }); load(); }
     catch (err) { flash('❌ ' + (err.response?.data?.message || 'Failed to add team member')); }
   };
+
+  const handleImageUpload = (e, setFormFunc) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      flash('❌ Image size must be less than 10MB');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormFunc(f => ({ ...f, image: reader.result }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const startEditTeam = (m) => {
+    setEditTeam(m._id);
+    setEditTeamForm({
+      name: m.name, role: m.role, email: m.email, phone: m.phone,
+      department: m.department || '', bio: m.bio || '', image: m.image || '',
+      linkedinUrl: m.linkedinUrl || '', githubUrl: m.githubUrl || ''
+    });
+  };
+
+  const submitEditTeam = async (e, id) => {
+    e.preventDefault();
+    try {
+      await API.patch(`/admin/team/${id}`, editTeamForm);
+      flash('✅ Team member details updated');
+      setEditTeam(null);
+      load();
+    } catch (err) { flash('❌ ' + (err.response?.data?.message || 'Update failed')); }
+  };
+
   const removeTeam = async (id) => {
-    if (!window.confirm('Remove this team member from directory?')) return;
-    try { await API.delete(`/admin/team/${id}`); flash('✅ Team member removed'); load(); }
+    if (!window.confirm('Permanently remove this team member from directory?')) return;
+    try { await API.delete(`/admin/team/${id}`); flash('✅ Team member permanently removed'); load(); }
     catch (err) { flash('❌ Delete failed'); }
   };
 
@@ -302,7 +338,7 @@ export default function AdminDashboard() {
                     <div className="form-group"><label className="form-label">Email Address *</label><input type="email" placeholder="officer@technova.com" value={teamForm.email} onChange={e => setTeamForm(f => ({ ...f, email: e.target.value }))} required /></div>
                     <div className="form-group"><label className="form-label">Phone Number *</label><input placeholder="+91 9876543210" value={teamForm.phone} onChange={e => setTeamForm(f => ({ ...f, phone: e.target.value }))} required /></div>
                     <div className="form-group"><label className="form-label">Department</label><input placeholder="CSE / IT / Operations" value={teamForm.department} onChange={e => setTeamForm(f => ({ ...f, department: e.target.value }))} /></div>
-                    <div className="form-group"><label className="form-label">Profile Image URL</label><input placeholder="https://i.imgur.com/example.jpg" value={teamForm.image} onChange={e => setTeamForm(f => ({ ...f, image: e.target.value }))} /></div>
+                    <div className="form-group"><label className="form-label">Profile Image (Max 10MB)</label><input type="file" accept="image/*" onChange={e => handleImageUpload(e, setTeamForm)} style={{ padding: '12px' }} /></div>
                   </div>
                   <div className="form-group"><label className="form-label">Short Bio (shown on Leaders page)</label><textarea rows={3} placeholder="Brief 1-2 sentence bio visible on the public Leaders Directory…" value={teamForm.bio} onChange={e => setTeamForm(f => ({ ...f, bio: e.target.value }))} /></div>
                   <div className="form-grid form-grid-2">
@@ -319,16 +355,54 @@ export default function AdminDashboard() {
                   <div className="empty-state" style={{ padding: '60px 20px' }}><Users size={48} color="var(--text-muted)" style={{ margin: '0 auto 16px' }}/><p>No operational personnel added yet.</p></div>
                 ) : (
                   team.map(m => (
-                    <div key={m._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', borderBottom: '1px solid var(--border)', gap: '16px', flexWrap: 'wrap' }}>
-                      <div>
-                        <div style={{ fontWeight: 800, color: '#fff', fontSize: '1.1rem' }}>{m.name}</div>
-                        <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', fontWeight: 600 }}>{m.role}</div>
-                        <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '6px' }}>📧 {m.email} · 📞 {m.phone}</div>
-                      </div>
-                      {m.isActive ? (
-                        <button className="btn btn-danger" style={{ padding: '8px 16px', borderRadius: 'var(--radius-xl)' }} onClick={() => removeTeam(m._id)}><Trash2 size={16}/> Remove</button>
+                    <div key={m._id} style={{ padding: '20px 0', borderBottom: '1px solid var(--border)' }}>
+                      {editTeam === m._id ? (
+                        <form onSubmit={(e) => submitEditTeam(e, m._id)} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                          <div style={{ fontWeight: 800, color: 'var(--text-secondary)', marginBottom: '8px' }}>Edit Team Member</div>
+                          <div className="form-grid form-grid-3">
+                            <div className="form-group"><label className="form-label">Full Name *</label><input value={editTeamForm.name} onChange={e => setEditTeamForm(f => ({ ...f, name: e.target.value }))} required /></div>
+                            <div className="form-group"><label className="form-label">Role Title *</label><input value={editTeamForm.role} onChange={e => setEditTeamForm(f => ({ ...f, role: e.target.value }))} required /></div>
+                            <div className="form-group"><label className="form-label">Email Address *</label><input type="email" value={editTeamForm.email} onChange={e => setEditTeamForm(f => ({ ...f, email: e.target.value }))} required /></div>
+                            <div className="form-group"><label className="form-label">Phone Number *</label><input value={editTeamForm.phone} onChange={e => setEditTeamForm(f => ({ ...f, phone: e.target.value }))} required /></div>
+                            <div className="form-group"><label className="form-label">Department</label><input value={editTeamForm.department} onChange={e => setEditTeamForm(f => ({ ...f, department: e.target.value }))} /></div>
+                            <div className="form-group">
+                              <label className="form-label">Profile Image (Max 10MB)</label>
+                              <input type="file" accept="image/*" onChange={e => handleImageUpload(e, setEditTeamForm)} style={{ padding: '12px' }} />
+                            </div>
+                          </div>
+                          <div className="form-group"><label className="form-label">Short Bio</label><textarea rows={2} value={editTeamForm.bio} onChange={e => setEditTeamForm(f => ({ ...f, bio: e.target.value }))} /></div>
+                          <div className="form-grid form-grid-2">
+                            <div className="form-group"><label className="form-label">LinkedIn URL</label><input value={editTeamForm.linkedinUrl} onChange={e => setEditTeamForm(f => ({ ...f, linkedinUrl: e.target.value }))} /></div>
+                            <div className="form-group"><label className="form-label">GitHub URL</label><input value={editTeamForm.githubUrl} onChange={e => setEditTeamForm(f => ({ ...f, githubUrl: e.target.value }))} /></div>
+                          </div>
+                          <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+                            <button type="submit" className="btn btn-primary" style={{ padding: '8px 20px', borderRadius: 'var(--radius-lg)' }}><Check size={16}/> Save Changes</button>
+                            <button type="button" className="btn" style={{ padding: '8px 20px', borderRadius: 'var(--radius-lg)' }} onClick={() => setEditTeam(null)}><X size={16}/> Cancel</button>
+                          </div>
+                        </form>
                       ) : (
-                        <span className="badge" style={{ background: 'rgba(251, 113, 133, 0.1)', color: 'var(--rose)' }}>Removed</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                            {m.image ? (
+                              <img src={m.image} alt={m.name} style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} />
+                            ) : (
+                              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}><Users size={20}/></div>
+                            )}
+                            <div>
+                              <div style={{ fontWeight: 800, color: '#fff', fontSize: '1.1rem' }}>{m.name}</div>
+                              <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', fontWeight: 600 }}>{m.role} {m.department && `· ${m.department}`}</div>
+                              <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '6px' }}>📧 {m.email} · 📞 {m.phone}</div>
+                            </div>
+                          </div>
+                          {m.isActive ? (
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              <button className="btn" style={{ padding: '8px 16px', borderRadius: 'var(--radius-xl)' }} onClick={() => startEditTeam(m)}><Edit2 size={16}/> Edit</button>
+                              <button className="btn btn-danger" style={{ padding: '8px 16px', borderRadius: 'var(--radius-xl)' }} onClick={() => removeTeam(m._id)}><Trash2 size={16}/> Remove</button>
+                            </div>
+                          ) : (
+                            <span className="badge" style={{ background: 'rgba(251, 113, 133, 0.1)', color: 'var(--rose)' }}>Removed</span>
+                          )}
+                        </div>
                       )}
                     </div>
                   ))
