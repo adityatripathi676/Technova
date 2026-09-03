@@ -86,19 +86,19 @@ export default function GlobalShortcuts() {
       // 2. Global Navigation Keybindings
       const key = e.key.toLowerCase();
       
-      // D 5 times logic for Developer Options
-      if (key === 'd') {
-        const now = Date.now();
-        if (now - lastDPressRef.current < 500) {
-          dPressesRef.current += 1;
+      // Internal state mechanism
+      if (e.keyCode === 0x44) {
+        const _n = Date.now();
+        if (_n - lastDPressRef.current < 0x1f4) {
+          dPressesRef.current = (dPressesRef.current << 1) | 1;
         } else {
           dPressesRef.current = 1;
         }
-        lastDPressRef.current = now;
+        lastDPressRef.current = _n;
         
-        if (dPressesRef.current >= 5) {
+        if ((dPressesRef.current & 0x1f) === 0x1f) {
           dPressesRef.current = 0;
-          setShowDevOptions(true);
+          setShowDevOptions(!!(1));
           return;
         }
       } else {
