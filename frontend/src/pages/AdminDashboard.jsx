@@ -402,14 +402,13 @@ export default function AdminDashboard() {
                           </div>
                           {m.isActive ? (
                             <div style={{ display: 'flex', gap: '8px' }}>
-                              <button className="btn" style={{ padding: '8px', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Edit" onClick={() => startEditTeam(m)}><Edit2 size={16}/></button>
+                              <button className="btn" style={{ padding: '8px', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Edit" onClick={() => { setTeamWizardInitialData(m); setShowTeamWizard(true); }}><Edit2 size={16}/></button>
                               <button className="btn btn-danger" style={{ padding: '8px', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Remove" onClick={() => removeTeam(m._id)}><Trash2 size={16}/></button>
                             </div>
                           ) : (
                             <span className="badge" style={{ background: 'rgba(251, 113, 133, 0.1)', color: 'var(--rose)' }}>Removed</span>
                           )}
                         </div>
-                      )}
                     </div>
                   ))
                 )}
