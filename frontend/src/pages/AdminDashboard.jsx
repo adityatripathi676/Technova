@@ -3,7 +3,8 @@ import { motion } from 'framer-motion';
 import { 
   Users, ShieldCheck, Landmark, FormInput, ScrollText, 
   UserPlus, Key, UserX, UserCheck, Edit2, Check, X, 
-  Trash2, PlusCircle, Building2, BookType, ToggleLeft, ToggleRight
+  Trash2, PlusCircle, Building2, BookType, ToggleLeft, ToggleRight,
+  Filter, Search, Calendar
 } from 'lucide-react';
 import API from '../api/axios';
 import Navbar from '../components/Navbar';
@@ -49,8 +50,11 @@ export default function AdminDashboard() {
   // Audit Logs
   const [logs, setLogs] = useState([]);
   const [logTotal, setLogTotal] = useState(0);
-  const [logSearch, setLogSearch] = useState('');
-  const [logRoleFilter, setLogRoleFilter] = useState('ALL');
+  const [showGlobalSearch, setShowGlobalSearch] = useState(false);
+  const [globalSearch, setGlobalSearch] = useState('');
+  const [activePopup, setActivePopup] = useState(null);
+  const [colFilters, setColFilters] = useState({ email: '', role: '', action: '', details: '' });
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
 
   const flash = useCallback((m) => {
     setMsg(m);
@@ -494,47 +498,114 @@ export default function AdminDashboard() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
                 <div className="section-title" style={{ margin: 0 }}><ScrollText size={24}/> System Immutable Audit Log</div>
-                <span className="badge" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 16px', borderRadius: '40px' }}>{logTotal} Total Audit Entries</span>
-              </div>
-              
-              <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
-                <input 
-                  type="text" 
-                  placeholder="Search logs by email, action, or details..." 
-                  value={logSearch} 
-                  onChange={e => setLogSearch(e.target.value)} 
-                  style={{ flex: 1, padding: '12px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', background: 'var(--bg-input)', color: '#fff' }} 
-                />
-                <select 
-                  value={logRoleFilter} 
-                  onChange={e => setLogRoleFilter(e.target.value)} 
-                  style={{ padding: '12px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', background: 'var(--bg-input)', color: '#fff' }}
-                >
-                  <option value="ALL">All Roles</option>
-                  <option value="admin">Admin</option>
-                  <option value="approver">Approver</option>
-                </select>
+                
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                  {showGlobalSearch && (
+                    <input 
+                      type="text" 
+                      placeholder="Search..." 
+                      autoFocus
+                      value={globalSearch} 
+                      onChange={e => setGlobalSearch(e.target.value)} 
+                      style={{ padding: '8px 16px', borderRadius: '40px', border: '1px solid var(--border)', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: '0.9rem' }} 
+                    />
+                  )}
+                  <button className="btn btn-dark" style={{ padding: '8px', borderRadius: '50%' }} onClick={() => setShowGlobalSearch(!showGlobalSearch)}>
+                    <Search size={16} />
+                  </button>
+                  <span className="badge" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 16px', borderRadius: '40px' }}>{logTotal} Total Audit Entries</span>
+                </div>
               </div>
 
-              <div style={{ overflowX: 'auto' }}>
+              <div style={{ overflowX: 'auto', paddingBottom: '100px' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', color: 'var(--text-secondary)' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid var(--border)', color: '#fff' }}>
-                      <th style={{ padding: '16px 12px' }}>Timestamp</th>
-                      <th style={{ padding: '16px 12px' }}>Actor Email</th>
-                      <th style={{ padding: '16px 12px' }}>Role</th>
-                      <th style={{ padding: '16px 12px' }}>Action</th>
+                      <th style={{ padding: '16px 12px', position: 'relative' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          Timestamp
+                          <Filter size={14} style={{ cursor: 'pointer', opacity: activePopup === 'timestamp' || dateRange.start || dateRange.end ? 1 : 0.5 }} onClick={() => setActivePopup(activePopup === 'timestamp' ? null : 'timestamp')} />
+                        </div>
+                        {activePopup === 'timestamp' && (
+                          <div style={{ position: 'absolute', top: '100%', left: 0, background: 'var(--bg-card)', border: '1px solid var(--border)', padding: '12px', borderRadius: '8px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '8px', minWidth: '220px', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
+                            <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>From:</label>
+                            <input type="datetime-local" value={dateRange.start} onChange={e => setDateRange({...dateRange, start: e.target.value})} style={{ background: 'var(--bg-input)', border: '1px solid var(--border)', color: '#fff', borderRadius: '4px', padding: '6px' }} />
+                            <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>To:</label>
+                            <input type="datetime-local" value={dateRange.end} onChange={e => setDateRange({...dateRange, end: e.target.value})} style={{ background: 'var(--bg-input)', border: '1px solid var(--border)', color: '#fff', borderRadius: '4px', padding: '6px' }} />
+                            <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                              <button className="btn btn-dark" onClick={() => { setDateRange({start: '', end: ''}); setActivePopup(null); }} style={{ padding: '4px 8px', flex: 1, fontSize: '0.8rem' }}>Clear</button>
+                              <button className="btn btn-primary" onClick={() => setActivePopup(null)} style={{ padding: '4px 8px', flex: 1, fontSize: '0.8rem' }}>Apply</button>
+                            </div>
+                          </div>
+                        )}
+                      </th>
+                      <th style={{ padding: '16px 12px', position: 'relative' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          Actor Email
+                          <Search size={14} style={{ cursor: 'pointer', opacity: activePopup === 'email' || colFilters.email ? 1 : 0.5 }} onClick={() => setActivePopup(activePopup === 'email' ? null : 'email')} />
+                        </div>
+                        {activePopup === 'email' && (
+                          <div style={{ position: 'absolute', top: '100%', left: 0, background: 'var(--bg-card)', border: '1px solid var(--border)', padding: '8px', borderRadius: '8px', zIndex: 10, display: 'flex', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
+                            <input type="text" placeholder="Search Email..." autoFocus value={colFilters.email} onChange={e => setColFilters({...colFilters, email: e.target.value})} onKeyDown={e => { if (e.key === 'Enter') setActivePopup(null); }} style={{ background: 'var(--bg-input)', border: '1px solid var(--border)', color: '#fff', borderRadius: '4px', padding: '6px 8px' }} />
+                          </div>
+                        )}
+                      </th>
+                      <th style={{ padding: '16px 12px', position: 'relative' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          Role
+                          <Filter size={14} style={{ cursor: 'pointer', opacity: activePopup === 'role' || colFilters.role ? 1 : 0.5 }} onClick={() => setActivePopup(activePopup === 'role' ? null : 'role')} />
+                        </div>
+                        {activePopup === 'role' && (
+                          <div style={{ position: 'absolute', top: '100%', left: 0, background: 'var(--bg-card)', border: '1px solid var(--border)', padding: '8px', borderRadius: '8px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '4px', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
+                            <select value={colFilters.role} onChange={e => { setColFilters({...colFilters, role: e.target.value}); setActivePopup(null); }} style={{ background: 'var(--bg-input)', border: '1px solid var(--border)', color: '#fff', borderRadius: '4px', padding: '6px 8px' }}>
+                              <option value="">All Roles</option>
+                              <option value="admin">Admin</option>
+                              <option value="approver">Approver</option>
+                            </select>
+                          </div>
+                        )}
+                      </th>
+                      <th style={{ padding: '16px 12px', position: 'relative' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          Action
+                          <Search size={14} style={{ cursor: 'pointer', opacity: activePopup === 'action' || colFilters.action ? 1 : 0.5 }} onClick={() => setActivePopup(activePopup === 'action' ? null : 'action')} />
+                        </div>
+                        {activePopup === 'action' && (
+                          <div style={{ position: 'absolute', top: '100%', left: 0, background: 'var(--bg-card)', border: '1px solid var(--border)', padding: '8px', borderRadius: '8px', zIndex: 10, display: 'flex', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
+                            <input type="text" placeholder="Search Action..." autoFocus value={colFilters.action} onChange={e => setColFilters({...colFilters, action: e.target.value})} onKeyDown={e => { if (e.key === 'Enter') setActivePopup(null); }} style={{ background: 'var(--bg-input)', border: '1px solid var(--border)', color: '#fff', borderRadius: '4px', padding: '6px 8px' }} />
+                          </div>
+                        )}
+                      </th>
                       <th style={{ padding: '16px 12px' }}>Event Ref</th>
-                      <th style={{ padding: '16px 12px' }}>Details</th>
+                      <th style={{ padding: '16px 12px', position: 'relative' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          Details
+                          <Search size={14} style={{ cursor: 'pointer', opacity: activePopup === 'details' || colFilters.details ? 1 : 0.5 }} onClick={() => setActivePopup(activePopup === 'details' ? null : 'details')} />
+                        </div>
+                        {activePopup === 'details' && (
+                          <div style={{ position: 'absolute', top: '100%', left: 0, background: 'var(--bg-card)', border: '1px solid var(--border)', padding: '8px', borderRadius: '8px', zIndex: 10, display: 'flex', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
+                            <input type="text" placeholder="Search Details..." autoFocus value={colFilters.details} onChange={e => setColFilters({...colFilters, details: e.target.value})} onKeyDown={e => { if (e.key === 'Enter') setActivePopup(null); }} style={{ background: 'var(--bg-input)', border: '1px solid var(--border)', color: '#fff', borderRadius: '4px', padding: '6px 8px' }} />
+                          </div>
+                        )}
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {logs
-                      .filter(l => logRoleFilter === 'ALL' || l.actorRole === logRoleFilter)
                       .filter(l => {
-                        if (!logSearch) return true;
-                        const s = logSearch.toLowerCase();
-                        return (l.actorEmail?.toLowerCase().includes(s) || l.action?.toLowerCase().includes(s) || l.details?.toLowerCase().includes(s));
+                        if (globalSearch) {
+                          const s = globalSearch.toLowerCase();
+                          if (!l.actorEmail?.toLowerCase().includes(s) && !l.action?.toLowerCase().includes(s) && !l.details?.toLowerCase().includes(s)) return false;
+                        }
+                        if (colFilters.email && !l.actorEmail?.toLowerCase().includes(colFilters.email.toLowerCase())) return false;
+                        if (colFilters.role && l.actorRole !== colFilters.role) return false;
+                        if (colFilters.action && !l.action?.toLowerCase().includes(colFilters.action.toLowerCase())) return false;
+                        if (colFilters.details && !l.details?.toLowerCase().includes(colFilters.details.toLowerCase())) return false;
+                        
+                        if (dateRange.start && new Date(l.createdAt) < new Date(dateRange.start)) return false;
+                        if (dateRange.end && new Date(l.createdAt) > new Date(dateRange.end)) return false;
+                        
+                        return true;
                       })
                       .map(l => (
                       <tr key={l._id} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.2s ease', cursor: 'default' }}>
