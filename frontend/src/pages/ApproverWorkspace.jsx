@@ -97,6 +97,7 @@ export default function ApproverWorkspace() {
     setSaving(true);
     try {
       const { data } = await API.patch(`/approver/review/${selectedEvent.eventId}`, {
+        overallStatus: selectedEvent.overallStatus,
         resources: selectedEvent.resources,
         overallFeedback: selectedEvent.overallFeedback,
       });
@@ -305,6 +306,20 @@ export default function ApproverWorkspace() {
                 <div style={{ padding: '24px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', marginBottom: '40px', color: 'var(--text-secondary)', fontSize: '1rem', lineHeight: 1.7 }}>
                   <div className="mono-label" style={{ marginBottom: '12px' }}>Event Overview</div>
                   {selectedEvent.eventDescription}
+                </div>
+
+                <div className="section-title"><Check size={20}/> Core Event Approval</div>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '40px' }}>
+                  {['Pending', 'In Review', 'Partially Approved', 'Approved', 'Rejected'].map(status => (
+                    <button
+                      key={status}
+                      className={`btn ${selectedEvent.overallStatus === status ? 'btn-primary' : 'btn-dark'}`}
+                      style={{ padding: '10px 24px', borderRadius: 'var(--radius-xl)' }}
+                      onClick={() => setSelectedEvent(ev => ({ ...ev, overallStatus: status }))}
+                    >
+                      {status}
+                    </button>
+                  ))}
                 </div>
 
                 <div className="section-title"><Check size={20}/> Resource Line Item Approvals</div>

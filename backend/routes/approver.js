@@ -111,7 +111,7 @@ router.patch('/review/:eventId', async (req, res) => {
       return res.status(400).json({ message: 'Invalid event ID format' });
     }
 
-    const { resources, overallFeedback } = req.body;
+    const { resources, overallFeedback, overallStatus } = req.body;
     const event = await EventRequest.findOne({ eventId: req.params.eventId });
     if (!event) return res.status(404).json({ message: 'Event not found' });
     
@@ -140,21 +140,10 @@ router.patch('/review/:eventId', async (req, res) => {
       }
     }
 
-    // ── Recompute overall status deterministically ─────────────────
-    const statuses = VALID_RESOURCES
-      .filter(k => event.resources[k]?.checked)
-      .map(k => event.resources[k].status);
-
-    if (statuses.length === 0 || statuses.every(s => s === 'Pending')) {
-      event.overallStatus = 'Pending';
-    } else if (statuses.every(s => s === 'Approved')) {
-      event.overallStatus = 'Approved';
-    } else if (statuses.every(s => s === 'Rejected')) {
-      event.overallStatus = 'Rejected';
-    } else if (statuses.some(s => s !== 'Pending')) {
-      event.overallStatus = 'Partially Approved';
-    } else {
-      event.overallStatus = 'In Review';
+    // ── Set overall status explicitly if provided ─────────────────
+    const VALID_OVERALL_STATUSES = ['Pending', 'In Review', 'Partially Approved', 'Approved', 'Rejected'];
+    if (overallStatus && VALID_OVERALL_STATUSES.includes(overallStatus)) {
+      event.overallStatus = overallStatus;
     }
 
     if (overallFeedback !== undefined) {
