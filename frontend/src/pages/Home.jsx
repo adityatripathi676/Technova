@@ -79,11 +79,11 @@ export default function Home() {
       const input = homeTrackInput.trim();
       if (/^\d{4}$/.test(input)) {
         const { data } = await API.get(`/events/track/${input}`);
-        setHomeTrackResult(data);
+        setHomeTrackResult([data]);
       } else {
         const { data } = await API.get(`/events/track-by-email?email=${encodeURIComponent(input)}`);
         if (Array.isArray(data) && data.length > 0) {
-          setHomeTrackResult(data[0]);
+          setHomeTrackResult(data);
         } else {
           setHomeTrackError('No event request record found for this email address.');
         }
@@ -210,29 +210,30 @@ export default function Home() {
                   </p>
                 )}
 
-                {homeTrackResult && (
+                {homeTrackResult && homeTrackResult.map(event => (
                   <motion.div 
+                    key={event.eventId}
                     initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                     className="card" style={{ marginTop: '32px', textAlign: 'left', padding: '32px', background: 'rgba(30,30,30,0.8)' }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                      <span style={{ color: '#fff', fontWeight: 800, fontSize: '1.4rem' }}>#{homeTrackResult.eventId}</span>
-                      <StatusBadge status={homeTrackResult.overallStatus} />
+                      <span style={{ color: '#fff', fontWeight: 800, fontSize: '1.4rem' }}>#{event.eventId}</span>
+                      <StatusBadge status={event.overallStatus} />
                     </div>
-                    <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text-primary)' }}>{homeTrackResult.eventName}</div>
+                    <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text-primary)' }}>{event.eventName}</div>
                     <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginTop: '8px', display: 'flex', gap: '16px' }}>
-                      <span style={{display: 'flex', alignItems: 'center', gap: '6px'}}><Shield size={16}/> {homeTrackResult.clubName}</span>
-                      <span style={{display: 'flex', alignItems: 'center', gap: '6px'}}><Crosshair size={16}/> {homeTrackResult.venue}</span>
+                      <span style={{display: 'flex', alignItems: 'center', gap: '6px'}}><Shield size={16}/> {event.clubName}</span>
+                      {event.venue && <span style={{display: 'flex', alignItems: 'center', gap: '6px'}}><Crosshair size={16}/> {event.venue}</span>}
                     </div>
                     <button
                       className="btn btn-ghost"
                       style={{ marginTop: '24px', width: '100%', padding: '14px', borderRadius: 'var(--radius-lg)' }}
-                      onClick={() => navigate(`/portal?tab=track`)}
+                      onClick={() => navigate(`/track/${event.eventId}`)}
                     >
                       View Full Details & Announcements <ArrowRight size={16} />
                     </button>
                   </motion.div>
-                )}
+                ))}
               </div>
             </div>
           </motion.div>

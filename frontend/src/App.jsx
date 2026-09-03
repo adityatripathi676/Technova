@@ -4,6 +4,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import LeadersPage from './pages/LeadersPage';
 import EventsPage from './pages/EventsPage';
+import EventDetailsPage from './pages/EventDetailsPage';
 import Login from './pages/Login';
 import CoordinatorPortal from './pages/CoordinatorPortal';
 import ApproverWorkspace from './pages/ApproverWorkspace';
@@ -26,6 +27,7 @@ function AppRoutes() {
       <Route path="/" element={<Home />} />
       <Route path="/leaders" element={<LeadersPage />} />
       <Route path="/events" element={<EventsPage />} />
+      <Route path="/track/:eventId" element={<EventDetailsPage />} />
       <Route path="/portal" element={<CoordinatorPortal />} />
       <Route path="/login" element={<Login />} />
       <Route path="/approver" element={
