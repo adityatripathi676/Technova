@@ -1,15 +1,18 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import Home from './pages/Home';
-import LeadersPage from './pages/LeadersPage';
-import EventsPage from './pages/EventsPage';
-import EventDetailsPage from './pages/EventDetailsPage';
-import Login from './pages/Login';
-import CoordinatorPortal from './pages/CoordinatorPortal';
-import ApproverWorkspace from './pages/ApproverWorkspace';
-import AdminDashboard from './pages/AdminDashboard';
-import Profile from './pages/Profile';
+
+const Home = lazy(() => import('./pages/Home'));
+const LeadersPage = lazy(() => import('./pages/LeadersPage'));
+const EventsPage = lazy(() => import('./pages/EventsPage'));
+const EventDetailsPage = lazy(() => import('./pages/EventDetailsPage'));
+const Login = lazy(() => import('./pages/Login'));
+const CoordinatorPortal = lazy(() => import('./pages/CoordinatorPortal'));
+const ApproverWorkspace = lazy(() => import('./pages/ApproverWorkspace'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const Profile = lazy(() => import('./pages/Profile'));
+
 import GlobalShortcuts from './components/GlobalShortcuts';
 import './styles/theme.css';
 import InstallPWA from './components/InstallPWA';
@@ -24,25 +27,27 @@ function RoleRedirect() {
 
 function AppRoutes() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/leaders" element={<LeadersPage />} />
-      <Route path="/events" element={<EventsPage />} />
-      <Route path="/track/:eventId" element={<EventDetailsPage />} />
-      <Route path="/portal" element={<CoordinatorPortal />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/approver" element={
-        <ProtectedRoute requiredRole="approver"><ApproverWorkspace /></ProtectedRoute>
-      } />
-      <Route path="/admin" element={
-        <ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>
-      } />
-      <Route path="/profile" element={
-        <ProtectedRoute><Profile /></ProtectedRoute>
-      } />
-      <Route path="/dashboard" element={<RoleRedirect />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <Suspense fallback={<div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>Loading application...</div>}>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/leaders" element={<LeadersPage />} />
+        <Route path="/events" element={<EventsPage />} />
+        <Route path="/track/:eventId" element={<EventDetailsPage />} />
+        <Route path="/portal" element={<CoordinatorPortal />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/approver" element={
+          <ProtectedRoute requiredRole="approver"><ApproverWorkspace /></ProtectedRoute>
+        } />
+        <Route path="/admin" element={
+          <ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>
+        } />
+        <Route path="/profile" element={
+          <ProtectedRoute><Profile /></ProtectedRoute>
+        } />
+        <Route path="/dashboard" element={<RoleRedirect />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Suspense>
   );
 }
 

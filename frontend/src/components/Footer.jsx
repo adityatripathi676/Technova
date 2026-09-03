@@ -16,6 +16,7 @@ export default function Footer() {
             <img 
               src="/logo-bw.png" 
               alt="Technova Logo" 
+              loading="lazy"
               style={{ width: '160px', height: '160px', objectFit: 'contain', opacity: 0.9, marginBottom: '24px', filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.05))' }} 
             />
             <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#fff', letterSpacing: '0.1em', marginBottom: '16px' }}>

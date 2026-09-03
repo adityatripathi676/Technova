@@ -32,7 +32,7 @@ export default function Navbar() {
       <nav className="navbar">
         <Link to={getBrandLink()} className="navbar-brand">
           <div className="navbar-logo-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', flexShrink: 0 }}>
-            <img src="/logo-color.png" alt="Technova Logo" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+            <img src="/logo-color.png" alt="Technova Logo" fetchpriority="high" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
           </div>
           <div style={{ marginLeft: '4px' }}>
             <span className="font-heading" style={{ fontSize: '1rem', fontWeight: 900, letterSpacing: '-0.02em', color: '#ffffff' }}>TECHNOVA</span>
