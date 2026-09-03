@@ -62,9 +62,32 @@ export default function NotificationButton() {
       setIsSubscribed(true);
     } catch (err) {
       console.error('Failed to subscribe to push notifications:', err);
-      // It might be denied by user
     } finally {
       setLoading(false);
+    }
+  };
+
+  const unsubscribeUser = async () => {
+    setLoading(true);
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      const subscription = await registration.pushManager.getSubscription();
+      if (subscription) {
+        await subscription.unsubscribe();
+      }
+      setIsSubscribed(false);
+    } catch (err) {
+      console.error('Failed to unsubscribe:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleSubscription = () => {
+    if (isSubscribed) {
+      unsubscribeUser();
+    } else {
+      subscribeUser();
     }
   };
 
@@ -72,9 +95,9 @@ export default function NotificationButton() {
 
   return (
     <button
-      onClick={isSubscribed ? null : subscribeUser}
-      disabled={loading || isSubscribed}
-      title={isSubscribed ? "Notifications Enabled" : "Enable Notifications"}
+      onClick={toggleSubscription}
+      disabled={loading}
+      title={isSubscribed ? "Notifications Enabled (Click to disable)" : "Enable Notifications"}
       style={{
         background: 'rgba(255, 255, 255, 0.05)',
         border: '1px solid rgba(255, 255, 255, 0.1)',
@@ -85,17 +108,17 @@ export default function NotificationButton() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        cursor: isSubscribed ? 'default' : 'pointer',
+        cursor: 'pointer',
         transition: 'all 0.3s ease',
         opacity: loading ? 0.5 : 1
       }}
       onMouseOver={e => {
-        if (!isSubscribed && !loading) {
+        if (!loading) {
           e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
         }
       }}
       onMouseOut={e => {
-        if (!isSubscribed && !loading) {
+        if (!loading) {
           e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
         }
       }}
