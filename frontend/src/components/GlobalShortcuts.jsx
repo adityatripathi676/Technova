@@ -314,20 +314,30 @@ export default function GlobalShortcuts() {
                   </p>
                 </div>
                 <button className="btn" style={{ background: 'var(--rose)', color: '#fff', border: 'none', padding: '12px', borderRadius: 'var(--radius-md)' }} onClick={() => { localStorage.clear(); window.location.reload(); }}>Clear Local Storage & Reload</button>
-                <button className="btn" style={{ background: 'var(--blue)', color: '#fff', border: 'none', padding: '12px', borderRadius: 'var(--radius-md)' }} onClick={() => {
-                  if (!window.eruda) {
-                    const script = document.createElement('script');
-                    script.src = 'https://cdn.jsdelivr.net/npm/eruda';
-                    script.onload = () => {
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button className="btn" style={{ flex: 1, background: 'var(--blue)', color: '#fff', border: 'none', padding: '12px', borderRadius: 'var(--radius-md)' }} onClick={() => {
+                    if (!window.eruda) {
+                      const script = document.createElement('script');
+                      script.src = 'https://cdn.jsdelivr.net/npm/eruda';
+                      script.onload = () => {
+                        window.eruda.init();
+                        window.eruda.show();
+                      };
+                      document.body.appendChild(script);
+                    } else {
                       window.eruda.init();
                       window.eruda.show();
-                    };
-                    document.body.appendChild(script);
-                  } else {
-                    window.eruda.show();
-                  }
-                  setShowDevOptions(false);
-                }}>Open Browser Console</button>
+                    }
+                    setShowDevOptions(false);
+                  }}>Open Console</button>
+
+                  <button className="btn" style={{ flex: 1, background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', padding: '12px', borderRadius: 'var(--radius-md)' }} onClick={() => {
+                    if (window.eruda) {
+                      window.eruda.destroy();
+                    }
+                    setShowDevOptions(false);
+                  }}>Turn Off Console</button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
