@@ -367,8 +367,8 @@ export default function Home() {
           <div className="container">
             <div className="footer-grid">
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1.4rem', fontWeight: 900, color: '#fff', marginBottom: '16px', letterSpacing: '-0.02em' }}>
-                  <div className="navbar-logo-icon" style={{ width: '32px', height: '32px', fontSize: '0.9rem' }}><Zap size={18} /></div> TECHNOVA
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '1.8rem', fontWeight: 900, color: '#fff', marginBottom: '16px', letterSpacing: '-0.02em' }}>
+                  <img src="/logo-bw.png" alt="Technova Logo BW" style={{ width: '48px', height: '48px', objectFit: 'contain' }} /> TECHNOVA
                 </div>
                 <p style={{ color: '#94a3b8', fontSize: '0.95rem', maxWidth: '360px', lineHeight: '1.7' }}>
                   Technova — The Official Technical Society of Manav Rachna International Institute of Research and Studies (MRIIRS), Sector 43, Aravalli Hills, Delhi-Surajkund Road, Faridabad, Haryana 121004.

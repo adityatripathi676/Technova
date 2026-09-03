@@ -112,8 +112,8 @@ export default function LeadersPage() {
           <div className="container">
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '60px', marginBottom: '60px' }}>
               <div style={{ gridColumn: 'span 2' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '1.4rem', fontWeight: 900, color: '#fff', marginBottom: '20px', letterSpacing: '0.1em' }}>
-                  TECHNOVA <span style={{ color: 'var(--text-muted)' }}>MRIIRS</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '1.8rem', fontWeight: 900, color: '#fff', marginBottom: '20px', letterSpacing: '-0.02em' }}>
+                  <img src="/logo-bw.png" alt="Technova Logo BW" style={{ width: '48px', height: '48px', objectFit: 'contain' }} /> TECHNOVA
                 </div>
                 <p style={{ color: '#94a3b8', fontSize: '0.95rem', maxWidth: '400px', lineHeight: '1.7', marginBottom: '32px' }}>
                   Technova — The Official Technical Society of Manav Rachna International Institute of Research and Studies (MRIIRS), Sector 43, Aravalli Hills, Delhi-Surajkund Road, Faridabad, Haryana 121004.
