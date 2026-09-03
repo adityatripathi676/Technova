@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { motion } from 'framer-motion';
@@ -20,7 +21,17 @@ const UPDATE_TYPES = ['Event Reminder', 'Meeting Notice', 'Venue Change', 'Time 
 
 export default function ApproverWorkspace() {
   const { user, updateUser } = useAuth();
-  const [tab, setTab] = useState('queue');
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const initialTab = query.get('tab') || 'queue';
+  
+  const [tab, setTab] = useState(initialTab);
+  
+  // Sync tab state if URL changes
+  useEffect(() => {
+    const q = new URLSearchParams(location.search);
+    if (q.get('tab')) setTab(q.get('tab'));
+  }, [location.search]);
   const [events, setEvents] = useState([]);
   const [calEvents, setCalEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);

@@ -15,6 +15,11 @@ export default function Navbar() {
     navigate('/login');
   };
 
+  const handleProfile = () => {
+    setMobileOpen(false);
+    if (user) navigate('/profile');
+  };
+
   const getBrandLink = () => {
     if (!user) return '/';
     if (user.role === 'admin') return '/admin';
@@ -29,7 +34,7 @@ export default function Navbar() {
           <div className="navbar-logo-icon"><Zap size={20} /></div>
           <div>
             <span className="font-heading" style={{ fontSize: '1.1rem', fontWeight: 900, letterSpacing: '-0.02em', color: '#ffffff' }}>TECHNOVA</span>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem', display: 'block', fontWeight: 700, marginTop: '-2px', letterSpacing: '0.05em' }}>MANAV RACHNA INTERNATIONAL INSTITUTE OF RESEARCH AND STUDIES</span>
+            <span className="hide-on-tablet" style={{ color: 'var(--text-muted)', fontSize: '0.7rem', display: 'block', fontWeight: 700, marginTop: '-2px', letterSpacing: '0.05em' }}>MANAV RACHNA INTERNATIONAL INSTITUTE OF RESEARCH AND STUDIES</span>
           </div>
         </Link>
 
@@ -70,13 +75,27 @@ export default function Navbar() {
           {/* Mobile Auth Section */}
           <div className="mobile-auth-section">
             {user ? (
-              <button
-                className="btn btn-ghost"
-                style={{ width: '100%', padding: '12px', justifyContent: 'center' }}
-                onClick={() => { handleLogout(); setMobileOpen(false); }}
-              >
-                Sign Out <LogOut size={16} />
-              </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--radius-md)' }}>
+                  {user.profilePicture ? (
+                    <img src={user.profilePicture} alt={user.name} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+                  ) : (
+                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#fff', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div>
+                    <div style={{ color: '#fff', fontWeight: 'bold' }}>{user.name}</div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{user.role.toUpperCase()}</div>
+                  </div>
+                </div>
+                <button className="btn btn-ghost" style={{ width: '100%', padding: '12px', justifyContent: 'center', border: '1px solid var(--border)' }} onClick={handleProfile}>
+                  My Profile <Users size={16} />
+                </button>
+                <button className="btn btn-primary" style={{ width: '100%', padding: '12px', justifyContent: 'center' }} onClick={() => { handleLogout(); setMobileOpen(false); }}>
+                  Sign Out <LogOut size={16} />
+                </button>
+              </div>
             ) : (
               <Link to="/login" className="btn btn-primary" style={{ width: '100%', padding: '12px', justifyContent: 'center' }} onClick={() => setMobileOpen(false)}>
                 Sign In <LogIn size={16} />
@@ -86,12 +105,19 @@ export default function Navbar() {
         </div>
 
         <div className="navbar-right">
-          <NotificationButton />
+          {user && <NotificationButton />}
           
           <div className="desktop-auth-section" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             {user ? (
               <>
-                <div className="navbar-user-badge" style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.05)', padding: '6px 14px 6px 6px', borderRadius: '40px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div 
+                  className="navbar-user-badge" 
+                  onClick={handleProfile}
+                  style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.05)', padding: '6px 14px 6px 6px', borderRadius: '40px', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', transition: 'all 0.2s' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
+                  title="My Profile"
+                >
                   {user.profilePicture ? (
                     <img
                       src={user.profilePicture}

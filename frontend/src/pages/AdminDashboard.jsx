@@ -225,7 +225,7 @@ export default function AdminDashboard() {
                 ) : (
                   users.map(u => (
                     <div key={u._id} style={{ borderBottom: '1px solid var(--border)', padding: '20px 0' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                         <div>
                           <div style={{ fontWeight: 800, color: '#fff', fontSize: '1.1rem' }}>{u.name}</div>
                           <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>{u.email}</div>
@@ -296,7 +296,7 @@ export default function AdminDashboard() {
                   <div className="empty-state" style={{ padding: '60px 20px' }}><Users size={48} color="var(--text-muted)" style={{ margin: '0 auto 16px' }}/><p>No operational personnel added yet.</p></div>
                 ) : (
                   team.map(m => (
-                    <div key={m._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', borderBottom: '1px solid var(--border)', gap: '16px' }}>
+                    <div key={m._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', borderBottom: '1px solid var(--border)', gap: '16px', flexWrap: 'wrap' }}>
                       <div>
                         <div style={{ fontWeight: 800, color: '#fff', fontSize: '1.1rem' }}>{m.name}</div>
                         <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', fontWeight: 600 }}>{m.role}</div>
@@ -357,7 +357,7 @@ export default function AdminDashboard() {
                       uniqueSocieties.map((soc, i) => {
                         const clubCount = realClubs.filter(c => c.societyName === soc && c.isActive).length;
                         return (
-                          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', borderBottom: '1px solid var(--border)' }}>
+                          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', borderBottom: '1px solid var(--border)', flexWrap: 'wrap', gap: '16px' }}>
                             <div>
                               <div style={{ fontWeight: 800, fontSize: '1.15rem', color: '#fff' }}>{soc}</div>
                               <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '6px' }}>{clubCount} club{clubCount !== 1 ? 's' : ''} registered</div>
@@ -424,7 +424,7 @@ export default function AdminDashboard() {
                     ) : (
                       realClubs.map(c => (
                         <div key={c._id} style={{ padding: '20px 0', borderBottom: '1px solid var(--border)' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px', flexWrap: 'wrap' }}>
                             <div>
                               <div style={{ fontWeight: 800, color: '#fff', fontSize: '1.15rem' }}>{c.clubName}</div>
                               <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: 700, marginTop: '4px' }}><Landmark size={14} style={{ display: 'inline', marginRight: 4 }}/> {c.societyName}</div>
@@ -472,7 +472,7 @@ export default function AdminDashboard() {
                   <div className="empty-state" style={{ padding: '60px 20px' }}><FormInput size={48} color="var(--text-muted)" style={{ margin: '0 auto 16px' }}/><p>No custom dynamic fields configured.</p></div>
                 ) : (
                   fields.map(f => (
-                    <div key={f._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', borderBottom: '1px solid var(--border)', gap: '16px' }}>
+                    <div key={f._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', borderBottom: '1px solid var(--border)', gap: '16px', flexWrap: 'wrap' }}>
                       <div>
                         <div style={{ fontWeight: 800, color: '#fff', fontSize: '1.1rem' }}>{f.fieldLabel}</div>
                         <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '6px' }}>Key: {f.fieldKey} · Type: {f.fieldType} {f.required ? '(Required)' : ''}</div>

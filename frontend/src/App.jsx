@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import CoordinatorPortal from './pages/CoordinatorPortal';
 import ApproverWorkspace from './pages/ApproverWorkspace';
 import AdminDashboard from './pages/AdminDashboard';
+import Profile from './pages/Profile';
 import './styles/theme.css';
 import InstallPWA from './components/InstallPWA';
 
@@ -32,6 +33,9 @@ function AppRoutes() {
       } />
       <Route path="/admin" element={
         <ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>
+      } />
+      <Route path="/profile" element={
+        <ProtectedRoute><Profile /></ProtectedRoute>
       } />
       <Route path="/dashboard" element={<RoleRedirect />} />
       <Route path="*" element={<Navigate to="/" replace />} />
