@@ -21,7 +21,7 @@ export default function Footer() {
             <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#fff', letterSpacing: '0.1em', marginBottom: '16px' }}>
               TECHNOVA
             </div>
-            <p style={{ color: '#94a3b8', fontSize: '0.95rem', maxWidth: '360px', lineHeight: '1.8' }}>
+            <p style={{ color: '#94a3b8', fontSize: '0.95rem', maxWidth: '360px', lineHeight: '1.8', textAlign: 'justify' }}>
               The Official Technical Society of Manav Rachna International Institute of Research and Studies (MRIIRS). Building the future through innovation and technology.
             </p>
           </div>

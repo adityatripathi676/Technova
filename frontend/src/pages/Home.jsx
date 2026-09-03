@@ -144,7 +144,7 @@ export default function Home() {
             <motion.h2 variants={fadeUp} style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '24px' }}>
               What is Technova Tech Society?
             </motion.h2>
-            <motion.p variants={fadeUp} style={{ color: 'var(--text-secondary)', fontSize: '1.15rem', maxWidth: '900px', lineHeight: '1.8', marginBottom: '48px' }}>
+            <motion.p variants={fadeUp} style={{ color: 'var(--text-secondary)', fontSize: '1.15rem', maxWidth: '900px', lineHeight: '1.8', marginBottom: '48px', textAlign: 'justify' }}>
               Technova is the premier student-led technical society under the <strong>Faculty of Engineering & Technology at Manav Rachna International Institute of Research and Studies (MRIIRS), Faridabad</strong>. Founded to foster a culture of algorithmic thinking, full-stack engineering, robotics innovation, and cyber security, Technova serves as the nerve center for all technical events, workshops, hackathons, and multi-club collaborations on campus.
             </motion.p>
 

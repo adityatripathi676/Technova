@@ -30,7 +30,7 @@ export default function LeadersPage() {
             <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} style={{ fontSize: '3.5rem', fontWeight: 900, color: '#fff', marginBottom: '24px', lineHeight: 1.1 }}>
               Executive Leaders <span style={{ color: 'var(--text-muted)' }}>& Coordinators</span>
             </motion.h1>
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} style={{ color: 'var(--text-secondary)', fontSize: '1.15rem', lineHeight: 1.6 }}>
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} style={{ color: 'var(--text-secondary)', fontSize: '1.15rem', lineHeight: 1.6, textAlign: 'justify' }}>
               Meet the student leaders, technical heads, and coordinators driving innovation across Manav Rachna International Institute of Research and Studies.
             </motion.p>
           </div>
