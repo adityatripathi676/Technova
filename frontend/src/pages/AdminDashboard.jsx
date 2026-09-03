@@ -52,6 +52,12 @@ export default function AdminDashboard() {
   const [logSearch, setLogSearch] = useState('');
   const [logRoleFilter, setLogRoleFilter] = useState('ALL');
 
+  const flash = useCallback((m) => {
+    setMsg(m);
+    if (flashTimer.current) clearTimeout(flashTimer.current);
+    flashTimer.current = setTimeout(() => setMsg(''), 4500);
+  }, []);
+
   const load = useCallback(async () => {
     try {
       if (tab === 'users') { const r = await API.get('/admin/users'); setUsers(r.data || []); }
@@ -60,15 +66,9 @@ export default function AdminDashboard() {
       if (tab === 'fields') { const r = await API.get('/admin/fields'); setFields(r.data || []); }
       if (tab === 'logs')  { const r = await API.get('/admin/audit-logs?limit=100'); setLogs(r.data.logs || []); setLogTotal(r.data.total || 0); }
     } catch (e) { flash('❌ ' + (e.response?.data?.message || 'Failed to load system data')); }
-  }, [tab]);
+  }, [tab, flash]);
 
   useEffect(() => { load(); }, [load]);
-
-  const flash = (m) => {
-    setMsg(m);
-    if (flashTimer.current) clearTimeout(flashTimer.current);
-    flashTimer.current = setTimeout(() => setMsg(''), 4500);
-  };
 
   // ── USERS ──
   const addUser = async (e) => {

@@ -54,10 +54,6 @@ export default function CoordinatorPortal() {
   const [tracking, setTracking] = useState(false);
   const [trackError, setTrackError] = useState('');
 
-  // 🛡️ SECURITY & ROLE ISOLATION
-  if (user && user.role === 'approver') return <Navigate to="/approver" replace />;
-  if (user && user.role === 'admin') return <Navigate to="/admin" replace />;
-
   useEffect(() => {
     API.get('/clubs').then(r => {
       const real = (r.data || []).filter(c => !c.clubName.endsWith('(Society Root)'));
@@ -66,6 +62,10 @@ export default function CoordinatorPortal() {
       setSocieties(uniqueSocieties);
     });
   }, []);
+
+  // 🛡️ SECURITY & ROLE ISOLATION
+  if (user && user.role === 'approver') return <Navigate to="/approver" replace />;
+  if (user && user.role === 'admin') return <Navigate to="/admin" replace />;
 
   const handleClubChange = (clubName) => {
     const club = clubs.find(c => c.clubName === clubName);
