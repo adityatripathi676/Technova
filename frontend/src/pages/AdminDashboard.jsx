@@ -49,6 +49,8 @@ export default function AdminDashboard() {
   // Audit Logs
   const [logs, setLogs] = useState([]);
   const [logTotal, setLogTotal] = useState(0);
+  const [logSearch, setLogSearch] = useState('');
+  const [logRoleFilter, setLogRoleFilter] = useState('ALL');
 
   const load = useCallback(async () => {
     try {
@@ -490,9 +492,28 @@ export default function AdminDashboard() {
           {/* ── AUDIT LOG TAB ── */}
           {tab === 'logs' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
                 <div className="section-title" style={{ margin: 0 }}><ScrollText size={24}/> System Immutable Audit Log</div>
                 <span className="badge" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 16px', borderRadius: '40px' }}>{logTotal} Total Audit Entries</span>
+              </div>
+              
+              <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
+                <input 
+                  type="text" 
+                  placeholder="Search logs by email, action, or details..." 
+                  value={logSearch} 
+                  onChange={e => setLogSearch(e.target.value)} 
+                  style={{ flex: 1, padding: '12px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', background: 'var(--bg-input)', color: '#fff' }} 
+                />
+                <select 
+                  value={logRoleFilter} 
+                  onChange={e => setLogRoleFilter(e.target.value)} 
+                  style={{ padding: '12px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', background: 'var(--bg-input)', color: '#fff' }}
+                >
+                  <option value="ALL">All Roles</option>
+                  <option value="admin">Admin</option>
+                  <option value="approver">Approver</option>
+                </select>
               </div>
 
               <div style={{ overflowX: 'auto' }}>
@@ -508,9 +529,14 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {logs.length === 0 ? (
-                      <tr><td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '60px' }}>No audit records indexed.</td></tr>
-                    ) : logs.map(l => (
+                    {logs
+                      .filter(l => logRoleFilter === 'ALL' || l.actorRole === logRoleFilter)
+                      .filter(l => {
+                        if (!logSearch) return true;
+                        const s = logSearch.toLowerCase();
+                        return (l.actorEmail?.toLowerCase().includes(s) || l.action?.toLowerCase().includes(s) || l.details?.toLowerCase().includes(s));
+                      })
+                      .map(l => (
                       <tr key={l._id} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.2s ease', cursor: 'default' }}>
                         <td style={{ padding: '16px 12px', color: 'var(--text-muted)', fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
                           {new Date(l.createdAt).toLocaleString('en-IN')}
@@ -526,6 +552,9 @@ export default function AdminDashboard() {
                         <td style={{ padding: '16px 12px', fontSize: '0.9rem' }}>{l.details}</td>
                       </tr>
                     ))}
+                    {logs.length === 0 && (
+                      <tr><td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '60px' }}>No audit records indexed.</td></tr>
+                    )}
                   </tbody>
                 </table>
               </div>

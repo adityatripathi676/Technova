@@ -154,17 +154,17 @@ router.patch('/review/:eventId', async (req, res) => {
     await event.save();
     await event.populate('updates');
 
-    // Log each reviewed item: one log entry per changed resource
-    for (const key of VALID_RESOURCES) {
-      if (resources?.[key]?.status && VALID_STATUSES.includes(resources[key].status)) {
-        await AuditLog.create({
-          actorEmail:    req.user.email,
-          actorRole:     req.user.role,
-          action:        resources[key].status === 'Approved' ? 'APPROVE_ITEM' : 'REJECT_ITEM',
-          targetEventId: req.params.eventId,
-          details:       `${key}: ${resources[key].status}`,
-        });
-      }
+    // Log a single consolidated entry for the event modification instead of minor line-item changes
+    const hasResourceChanges = resources && typeof resources === 'object' && Object.keys(resources).some(key => VALID_RESOURCES.includes(key) && resources[key]?.status);
+    
+    if (hasResourceChanges || overallStatus) {
+      await AuditLog.create({
+        actorEmail:    req.user.email,
+        actorRole:     req.user.role,
+        action:        'EVENT_MODIFIED',
+        targetEventId: req.params.eventId,
+        details:       `Reviewed resources/status for event: ${event.eventName}`
+      });
     }
 
     // ── Web Push Notification on Approval ───────────────────────
