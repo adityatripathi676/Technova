@@ -11,6 +11,9 @@ export default function GlobalShortcuts() {
 
   const [showHelp, setShowHelp] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [showDevOptions, setShowDevOptions] = useState(false);
+  const dPressesRef = useRef(0);
+  const lastDPressRef = useRef(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [events, setEvents] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(false);
@@ -71,6 +74,7 @@ export default function GlobalShortcuts() {
       if (e.key === 'Escape') {
         setShowHelp(false);
         setShowSearch(false);
+        setShowDevOptions(false);
         return;
       }
 
@@ -82,6 +86,25 @@ export default function GlobalShortcuts() {
       // 2. Global Navigation Keybindings
       const key = e.key.toLowerCase();
       
+      // D 5 times logic for Developer Options
+      if (key === 'd') {
+        const now = Date.now();
+        if (now - lastDPressRef.current < 500) {
+          dPressesRef.current += 1;
+        } else {
+          dPressesRef.current = 1;
+        }
+        lastDPressRef.current = now;
+        
+        if (dPressesRef.current >= 5) {
+          dPressesRef.current = 0;
+          setShowDevOptions(true);
+          return;
+        }
+      } else {
+        dPressesRef.current = 0;
+      }
+
       switch (key) {
         case 'o':
           e.preventDefault();
@@ -131,6 +154,7 @@ export default function GlobalShortcuts() {
   useEffect(() => {
     setShowHelp(false);
     setShowSearch(false);
+    setShowDevOptions(false);
   }, [location.pathname]);
 
   const filteredEvents = events.filter(e => {
@@ -256,6 +280,39 @@ export default function GlobalShortcuts() {
                     {searchQuery ? 'No matching events found.' : 'Start typing to search...'}
                   </div>
                 )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showDevOptions && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            onClick={() => setShowDevOptions(false)}
+          >
+            <motion.div 
+              initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
+              className="glass-card" style={{ width: '100%', maxWidth: '600px', padding: '32px' }}
+              onClick={e => e.stopPropagation()}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary)' }}>Developer Options</h3>
+                <button className="btn btn-ghost" style={{ padding: '8px' }} onClick={() => setShowDevOptions(false)}><X size={20}/></button>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ padding: '16px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                  <h4 style={{ marginBottom: '8px', color: '#fff' }}>Debug Information</h4>
+                  <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.6' }}>
+                    <strong>Current Path:</strong> {location.pathname}<br/>
+                    <strong>User Agent:</strong> {navigator.userAgent}<br/>
+                    <strong>Environment:</strong> {import.meta.env.MODE}<br/>
+                    <strong>Viewport:</strong> {window.innerWidth}x{window.innerHeight}
+                  </p>
+                </div>
+                <button className="btn" style={{ background: 'var(--rose)', color: '#fff', border: 'none', padding: '12px', borderRadius: 'var(--radius-md)' }} onClick={() => { localStorage.clear(); window.location.reload(); }}>Clear Local Storage & Reload</button>
               </div>
             </motion.div>
           </motion.div>

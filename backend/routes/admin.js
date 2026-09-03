@@ -206,7 +206,7 @@ router.post('/team', async (req, res) => {
     res.status(201).json(member);
   } catch (err) {
     console.error('[Admin/team POST]', err);
-    res.status(500).json({ message: 'An error occurred.' });
+    res.status(500).json({ message: err.message || 'An error occurred.' });
   }
 });
 
@@ -250,7 +250,7 @@ router.patch('/team/:id', async (req, res) => {
     res.json(member);
   } catch (err) {
     console.error('[Admin/team PATCH]', err);
-    res.status(500).json({ message: 'An error occurred.' });
+    res.status(500).json({ message: err.message || 'An error occurred.' });
   }
 });
 
