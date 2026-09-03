@@ -67,13 +67,13 @@ export default function Footer() {
             <div style={{ minWidth: '160px' }}>
               <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ffffff', marginBottom: '24px', textTransform: 'uppercase', letterSpacing: '0.15em', opacity: 0.8 }}>Connect</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-                <a href="https://instagram.com/technova_mriirs" target="_blank" rel="noreferrer" className="footer-link">
+                <a href="https://www.instagram.com/technova.mriirs" target="_blank" rel="noreferrer" className="footer-link">
                   <InstagramIcon size={16}/> Instagram
                 </a>
-                <a href="https://linkedin.com/company/technova-mriirs" target="_blank" rel="noreferrer" className="footer-link">
+                <a href="https://www.linkedin.com/in/aditya766/" target="_blank" rel="noreferrer" className="footer-link">
                   <LinkedinIcon size={16}/> LinkedIn
                 </a>
-                <a href="mailto:technova@mriirs.edu.in" className="footer-link">
+                <a href="mailto:technovamriirs@gmail.com" className="footer-link">
                   <Mail size={16}/> Contact Us
                 </a>
               </div>
