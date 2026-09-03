@@ -1,30 +1,86 @@
 import React, { useState, useRef } from 'react';
-import { UploadCloud, X, Image as ImageIcon } from 'lucide-react';
+import { UploadCloud, X, Image as ImageIcon, Loader2 } from 'lucide-react';
+import heic2any from 'heic2any';
 
 export default function DragDropImageUpload({ value, onChange, maxSizeMB = 10 }) {
   const [isDragging, setIsDragging] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef(null);
 
-  const handleFile = (file) => {
+  const processAndCompressImage = (file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        
+        // Max dimensions
+        const MAX_DIM = 1024;
+        if (width > height) {
+          if (width > MAX_DIM) {
+            height *= MAX_DIM / width;
+            width = MAX_DIM;
+          }
+        } else {
+          if (height > MAX_DIM) {
+            width *= MAX_DIM / height;
+            height = MAX_DIM;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Compress to JPEG with 0.7 quality to guarantee it's small enough for Vercel/MongoDB limits
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+        setIsProcessing(false);
+        onChange(compressedBase64);
+      };
+      img.onerror = () => {
+        setIsProcessing(false);
+        setError('Failed to process image');
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleFile = async (file) => {
     setError('');
     if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      setError('Please upload a valid image file');
-      return;
-    }
 
     if (file.size > maxSizeMB * 1024 * 1024) {
       setError(`Image size must be less than ${maxSizeMB}MB`);
       return;
     }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      onChange(reader.result);
-    };
-    reader.readAsDataURL(file);
+    setIsProcessing(true);
+
+    try {
+      let processFile = file;
+
+      // Convert HEIC/HEIF to JPEG first
+      if (file.type === 'image/heic' || file.type === 'image/heif' || file.name.toLowerCase().endsWith('.heic')) {
+        const convertedBlob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.8 });
+        // heic2any might return an array of blobs if it's an animated image, just take the first one
+        processFile = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+      } else if (!file.type.startsWith('image/')) {
+        setIsProcessing(false);
+        setError('Please upload a valid image file');
+        return;
+      }
+
+      processAndCompressImage(processFile);
+    } catch (err) {
+      console.error('Image processing error:', err);
+      setIsProcessing(false);
+      setError('Failed to process image. Try a standard JPG/PNG.');
+    }
   };
 
   const onDragOver = (e) => {
@@ -53,7 +109,9 @@ export default function DragDropImageUpload({ value, onChange, maxSizeMB = 10 })
   };
 
   const triggerSelect = () => {
-    fileInputRef.current?.click();
+    if (!isProcessing) {
+      fileInputRef.current?.click();
+    }
   };
 
   const removeImage = (e) => {
@@ -105,25 +163,37 @@ export default function DragDropImageUpload({ value, onChange, maxSizeMB = 10 })
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            cursor: 'pointer',
+            cursor: isProcessing ? 'not-allowed' : 'pointer',
             transition: 'all 0.2s ease',
             color: isDragging ? 'var(--primary)' : 'var(--text-secondary)'
           }}
         >
           <input 
             type="file" 
-            accept="image/*" 
+            accept="image/*,.heic,.heif" 
             ref={fileInputRef} 
             onChange={onFileChange} 
             style={{ display: 'none' }} 
           />
-          <UploadCloud size={32} style={{ marginBottom: '12px', opacity: 0.8 }} />
-          <div style={{ fontWeight: 600, fontSize: '0.95rem', marginBottom: '4px' }}>
-            Click or drag image here
-          </div>
-          <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>
-            SVG, PNG, JPG or GIF (max. {maxSizeMB}MB)
-          </div>
+          
+          {isProcessing ? (
+            <>
+              <Loader2 size={32} className="spin" style={{ marginBottom: '12px', opacity: 0.8 }} />
+              <div style={{ fontWeight: 600, fontSize: '0.95rem', marginBottom: '4px' }}>
+                Optimizing image...
+              </div>
+            </>
+          ) : (
+            <>
+              <UploadCloud size={32} style={{ marginBottom: '12px', opacity: 0.8 }} />
+              <div style={{ fontWeight: 600, fontSize: '0.95rem', marginBottom: '4px' }}>
+                Click or drag image here
+              </div>
+              <div style={{ fontSize: '0.8rem', opacity: 0.7 }}>
+                JPG, PNG, HEIC (max. {maxSizeMB}MB)
+              </div>
+            </>
+          )}
         </div>
       )}
       

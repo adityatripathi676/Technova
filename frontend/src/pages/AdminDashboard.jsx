@@ -4,7 +4,7 @@ import {
   Users, ShieldCheck, Landmark, FormInput, ScrollText, 
   UserPlus, Key, UserX, UserCheck, Edit2, Check, X, 
   Trash2, PlusCircle, Building2, BookType, ToggleLeft, ToggleRight,
-  Filter, Search, Calendar
+  Filter, Search, Calendar, Linkedin, Github, Mail
 } from 'lucide-react';
 import API from '../api/axios';
 import Navbar from '../components/Navbar';
@@ -360,7 +360,7 @@ export default function AdminDashboard() {
                       {editTeam === m._id ? (
                         <form onSubmit={(e) => submitEditTeam(e, m._id)} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                           <div style={{ fontWeight: 800, color: 'var(--text-secondary)', marginBottom: '8px' }}>Edit Team Member</div>
-                          <div className="form-grid form-grid-3">
+                          <div className="form-grid form-grid-2">
                             <div className="form-group"><label className="form-label">Full Name *</label><input value={editTeamForm.name} onChange={e => setEditTeamForm(f => ({ ...f, name: e.target.value }))} required /></div>
                             <div className="form-group"><label className="form-label">Role Title *</label><input value={editTeamForm.role} onChange={e => setEditTeamForm(f => ({ ...f, role: e.target.value }))} required /></div>
                             <div className="form-group"><label className="form-label">Email Address *</label><input type="email" value={editTeamForm.email} onChange={e => setEditTeamForm(f => ({ ...f, email: e.target.value }))} required /></div>
@@ -392,7 +392,23 @@ export default function AdminDashboard() {
                             <div>
                               <div style={{ fontWeight: 800, color: '#fff', fontSize: '1.1rem' }}>{m.name}</div>
                               <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', fontWeight: 600 }}>{m.role} {m.department && `· ${m.department}`}</div>
-                              <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '6px' }}>📧 {m.email} · 📞 {m.phone}</div>
+                              <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <span><Mail size={14} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: '4px' }}/>{m.email}</span>
+                                <span>·</span>
+                                <span>📞 {m.phone}</span>
+                                {m.linkedinUrl && (
+                                  <>
+                                    <span>·</span>
+                                    <a href={m.linkedinUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center' }} title="LinkedIn"><Linkedin size={14}/></a>
+                                  </>
+                                )}
+                                {m.githubUrl && (
+                                  <>
+                                    <span>·</span>
+                                    <a href={m.githubUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', display: 'flex', alignItems: 'center' }} title="GitHub"><Github size={14}/></a>
+                                  </>
+                                )}
+                              </div>
                             </div>
                           </div>
                           {m.isActive ? (
