@@ -71,7 +71,14 @@ app.use('/api/team',          require('./routes/team'));  // public read-only (n
 app.use('/api/notifications', require('./routes/notifications'));
 
 // ─── 10. HEALTH CHECK (no sensitive info) ────────────────────────────
-app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+app.get('/api/health', (req, res) => res.json({ 
+  status: 'ok',
+  env: {
+    hasMongo: !!process.env.MONGODB_URI,
+    hasJwt: !!process.env.JWT_SECRET,
+    hasVapid: !!process.env.VAPID_PUBLIC_KEY
+  }
+}));
 
 // ─── 11. 404 FALLBACK (before error handler) ──────────────────────────
 app.use('/api/*', (req, res) => res.status(404).json({ message: 'API route not found' }));
