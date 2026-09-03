@@ -240,7 +240,7 @@ export default function AdminDashboard() {
       onConfirm: async () => {
         setConfirmConfig(c => ({ ...c, isOpen: false }));
         try { await API.delete(`/admin/fields/${id}`); flash('✅ Field deleted'); load(); }
-        catch (err) { flash('❌ Delete failed'); }
+        catch (err) { flash('❌ ' + (err.response?.data?.message || err.message || 'Delete failed')); }
       }
     });
   };

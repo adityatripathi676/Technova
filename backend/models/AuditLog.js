@@ -12,7 +12,7 @@ const auditLogSchema = new mongoose.Schema({
       'PASSWORD_RESET', 'ADD_USER', 'REMOVE_USER', 'EDIT_USER',
       'ADD_MEMBER', 'REMOVE_MEMBER', 'EDIT_MEMBER',
       'ADD_CLUB', 'REMOVE_CLUB',
-      'ADD_FIELD', 'TOGGLE_FIELD',
+      'ADD_FIELD', 'TOGGLE_FIELD', 'DELETE_FIELD',
       'POST_UPDATE',
     ],
     required: true,

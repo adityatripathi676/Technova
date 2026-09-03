@@ -453,7 +453,7 @@ router.delete('/fields/:id', async (req, res) => {
     res.json({ message: 'Field deleted successfully' });
   } catch (err) {
     console.error('[Admin/fields DELETE]', err);
-    res.status(500).json({ message: 'An error occurred.' });
+    res.status(500).json({ message: err.message || 'An error occurred.' });
   }
 });
 
