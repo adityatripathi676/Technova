@@ -326,7 +326,7 @@ export default function Home() {
             viewport={{ once: true, margin: "-100px" }}
             variants={fadeUp}
           >
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: '60px' }}>
+            <div className="split-grid">
               <div>
                 <div className="mono-label" style={{ marginBottom: '12px' }}>// FREQUENTLY ASKED QUESTIONS</div>
                 <h2 style={{ fontSize: '2.8rem', fontWeight: 900, lineHeight: 1.1 }}>

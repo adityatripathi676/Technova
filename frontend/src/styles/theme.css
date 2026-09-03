@@ -523,6 +523,24 @@ tbody tr:hover { background: rgba(255,255,255,0.03); }
   gap: 40px;
 }
 
+/* ─── RESPONSIVE SPLIT GRID ────────────────────────────────────────────── */
+.split-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 60px;
+}
+
+@media (max-width: 992px) {
+  .split-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ─── CUSTOM CHECKBOXES ─────────────────────────────────────────── */
 .checkbox-row {
   display: flex;
