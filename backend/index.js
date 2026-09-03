@@ -58,8 +58,18 @@ app.use(express.json({ limit: '15mb' }));
 // ─── 7. MONGO SANITIZE: strip $-operator injection from req body/query/params ──
 app.use(mongoSanitize());
 
-// ─── 8. CONNECT DB ───────────────────────────────────────────────────
-connectDB();
+// ─── 8. CONNECT DB (Serverless-safe) ───────────────────────────────────
+app.use(async (req, res, next) => {
+  // Skip DB connection for purely diagnostic health check
+  if (req.path === '/api/health') return next();
+  
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    res.status(503).json({ message: 'Database connection failed. Please try again later.' });
+  }
+});
 
 // ─── 9. ROUTES ───────────────────────────────────────────────────────
 app.use('/api/auth',     require('./routes/auth'));
