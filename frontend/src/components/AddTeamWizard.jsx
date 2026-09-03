@@ -159,12 +159,25 @@ export default function AddTeamWizard({ isOpen, onClose, onSubmit, initialData }
               <motion.div key="step2" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} style={{ display: 'flex', flexDirection: 'column', height: '400px' }}>
                 <h3 style={{ margin: '0 0 10px 0' }}>Profile Image</h3>
                 {!imageSrc ? (
-                  <div style={{ flex: 1, border: '2px dashed var(--border)', borderRadius: 'var(--radius-md)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                    <input type="file" accept="image/*,.heic" onChange={handleFileChange} style={{ opacity: 0, position: 'absolute', inset: 0, cursor: 'pointer' }} />
-                    <Upload size={32} color="var(--text-secondary)" style={{ marginBottom: '12px' }} />
-                    <p style={{ color: 'var(--text-secondary)' }}>Click or drag image to upload</p>
-                    {isProcessingImage && <p style={{ color: 'var(--primary)', marginTop: '8px' }}>Processing HEIC...</p>}
-                  </div>
+                  form.image ? (
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
+                      <img src={form.image} alt="Current Profile" style={{ width: '200px', height: '200px', objectFit: 'cover', borderRadius: '50%', border: '4px solid var(--border)' }} />
+                      <div style={{ display: 'flex', gap: '12px' }}>
+                        <label className="btn btn-secondary" style={{ cursor: 'pointer' }}>
+                          Upload New Image
+                          <input type="file" accept="image/*,.heic" onChange={handleFileChange} style={{ display: 'none' }} />
+                        </label>
+                        <button className="btn btn-ghost" style={{ color: 'var(--rose)' }} onClick={() => setForm(f => ({ ...f, image: '' }))}>Remove Image</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ flex: 1, border: '2px dashed var(--border)', borderRadius: 'var(--radius-md)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                      <input type="file" accept="image/*,.heic" onChange={handleFileChange} style={{ opacity: 0, position: 'absolute', inset: 0, cursor: 'pointer' }} />
+                      <Upload size={32} color="var(--text-secondary)" style={{ marginBottom: '12px' }} />
+                      <p style={{ color: 'var(--text-secondary)' }}>Click or drag image to upload</p>
+                      {isProcessingImage && <p style={{ color: 'var(--primary)', marginTop: '8px' }}>Processing HEIC...</p>}
+                    </div>
+                  )
                 ) : (
                   <div style={{ display: 'flex', gap: '20px', height: '100%' }}>
                     <div style={{ position: 'relative', flex: 1, background: '#111', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
