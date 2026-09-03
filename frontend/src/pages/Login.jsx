@@ -41,7 +41,7 @@ export default function Login() {
           >
             <div style={{ textAlign: 'center', marginBottom: '32px' }}>
               <div style={{
-                width: '64px', height: '64px',
+                width: '96px', height: '96px',
                 margin: '0 auto 16px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center'
               }}>
