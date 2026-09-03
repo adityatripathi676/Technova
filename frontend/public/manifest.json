@@ -3,7 +3,7 @@
   "short_name": "Technova",
   "description": "The official event management and logistics platform of Technova Technical Society, Manav Rachna International Institute of Research and Studies.",
   "start_url": "/",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#0a0a0a",
   "theme_color": "#ffffff",
   "orientation": "portrait-primary",
