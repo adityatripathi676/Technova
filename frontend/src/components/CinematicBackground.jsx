@@ -1,7 +1,16 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-export default function CinematicBackground() {
+export default function CinematicBackground({
+  particlesCount = 1500,
+  particleSize = 0.15,
+  particleColor = 0xffffff,
+  particleOpacity = 0.8,
+  rotationSpeedY = 0.002,
+  rotationSpeedX = 0.001,
+  mouseSensitivity = 0.1,
+  background = 'radial-gradient(circle at center, #111111 0%, #050505 100%)'
+}) {
   const mountRef = useRef(null);
 
   useEffect(() => {
@@ -21,7 +30,6 @@ export default function CinematicBackground() {
 
     // Create particles
     const geometry = new THREE.BufferGeometry();
-    const particlesCount = 1500;
     const posArray = new Float32Array(particlesCount * 3);
     for(let i = 0; i < particlesCount * 3; i++) {
       // Spread them across a wide area
@@ -31,10 +39,10 @@ export default function CinematicBackground() {
     
     // Premium monochrome material
     const material = new THREE.PointsMaterial({
-      size: 0.15,
-      color: 0xffffff,
+      size: particleSize,
+      color: particleColor,
       transparent: true,
-      opacity: 0.8,
+      opacity: particleOpacity,
       blending: THREE.AdditiveBlending
     });
 
@@ -44,8 +52,6 @@ export default function CinematicBackground() {
     // Mouse Interaction
     let mouseX = 0;
     let mouseY = 0;
-    let targetX = 0;
-    let targetY = 0;
     const windowHalfX = width / 2;
     const windowHalfY = height / 2;
 
@@ -70,15 +76,12 @@ export default function CinematicBackground() {
       requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
 
-      targetX = mouseX * 0.001;
-      targetY = mouseY * 0.001;
-
-      particlesMesh.rotation.y += 0.002;
-      particlesMesh.rotation.x += 0.001;
+      particlesMesh.rotation.y += rotationSpeedY;
+      particlesMesh.rotation.x += rotationSpeedX;
 
       // Premium cursor hover feel - smooth interpolation
-      camera.position.x += (mouseX * 0.1 - camera.position.x) * 0.05;
-      camera.position.y += (-mouseY * 0.1 - camera.position.y) * 0.05;
+      camera.position.x += (mouseX * mouseSensitivity - camera.position.x) * 0.05;
+      camera.position.y += (-mouseY * mouseSensitivity - camera.position.y) * 0.05;
       camera.lookAt(scene.position);
 
       renderer.render(scene, camera);
@@ -96,7 +99,7 @@ export default function CinematicBackground() {
       material.dispose();
       renderer.dispose();
     };
-  }, []);
+  }, [particlesCount, particleSize, particleColor, particleOpacity, rotationSpeedY, rotationSpeedX, mouseSensitivity]);
 
   return (
     <div 
@@ -109,7 +112,7 @@ export default function CinematicBackground() {
         height: '100vh',
         zIndex: 0, // Behind everything
         pointerEvents: 'none', // Allow clicks to pass through
-        background: 'radial-gradient(circle at center, #111111 0%, #050505 100%)'
+        background: background
       }}
     />
   );
