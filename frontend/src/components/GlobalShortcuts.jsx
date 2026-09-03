@@ -313,6 +313,20 @@ export default function GlobalShortcuts() {
                   </p>
                 </div>
                 <button className="btn" style={{ background: 'var(--rose)', color: '#fff', border: 'none', padding: '12px', borderRadius: 'var(--radius-md)' }} onClick={() => { localStorage.clear(); window.location.reload(); }}>Clear Local Storage & Reload</button>
+                <button className="btn" style={{ background: 'var(--blue)', color: '#fff', border: 'none', padding: '12px', borderRadius: 'var(--radius-md)' }} onClick={() => {
+                  if (!window.eruda) {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdn.jsdelivr.net/npm/eruda';
+                    script.onload = () => {
+                      window.eruda.init();
+                      window.eruda.show();
+                    };
+                    document.body.appendChild(script);
+                  } else {
+                    window.eruda.show();
+                  }
+                  setShowDevOptions(false);
+                }}>Open Browser Console</button>
               </div>
             </motion.div>
           </motion.div>
