@@ -45,7 +45,8 @@ export default function AdminDashboard() {
 
   // Form Fields
   const [fields, setFields] = useState([]);
-  const [fieldForm, setFieldForm] = useState({ fieldKey: '', fieldLabel: '', fieldType: 'text', required: false, enabled: true });
+  const [fieldForm, setFieldForm] = useState({ fieldKey: '', fieldLabel: '', fieldType: 'text', required: false, enabled: true, options: '' });
+  const [fieldDropdownOpen, setFieldDropdownOpen] = useState(false);
 
   // Audit Logs
   const [logs, setLogs] = useState([]);
@@ -151,8 +152,24 @@ export default function AdminDashboard() {
   // ── FIELDS ──
   const addField = async (e) => {
     e.preventDefault();
-    try { await API.post('/admin/fields', fieldForm); flash('✅ Custom form field added'); setFieldForm({ fieldKey: '', fieldLabel: '', fieldType: 'text', required: false, enabled: true }); load(); }
+    try { 
+      const payload = { ...fieldForm };
+      if (['dropdown', 'multiselect'].includes(payload.fieldType) && typeof payload.options === 'string') {
+        payload.options = payload.options.split(',').map(s => s.trim()).filter(Boolean);
+      } else {
+        payload.options = [];
+      }
+      await API.post('/admin/fields', payload); 
+      flash('✅ Custom form field added'); 
+      setFieldForm({ fieldKey: '', fieldLabel: '', fieldType: 'text', required: false, enabled: true, options: '' }); 
+      load(); 
+    }
     catch (err) { flash('❌ ' + (err.response?.data?.message || 'Failed to add field')); }
+  };
+  const removeField = async (id) => {
+    if (!window.confirm('Delete this form field? This may affect existing event requests.')) return;
+    try { await API.delete(`/admin/fields/${id}`); flash('✅ Field deleted'); load(); }
+    catch (err) { flash('❌ Delete failed'); }
   };
   const toggleField = async (id, enabled) => {
     try { await API.patch(`/admin/fields/${id}`, { enabled: !enabled }); load(); }
@@ -460,10 +477,51 @@ export default function AdminDashboard() {
                   <div className="form-group"><label className="form-label">Field Key (Unique Identifier) *</label><input placeholder="customEquipment1" value={fieldForm.fieldKey} onChange={e => setFieldForm(f => ({ ...f, fieldKey: e.target.value }))} required /></div>
                   <div className="form-group"><label className="form-label">Display Label *</label><input placeholder="Display Title" value={fieldForm.fieldLabel} onChange={e => setFieldForm(f => ({ ...f, fieldLabel: e.target.value }))} required /></div>
                   <div className="form-group"><label className="form-label">Input Control Type *</label>
-                    <select value={fieldForm.fieldType} onChange={e => setFieldForm(f => ({ ...f, fieldType: e.target.value }))}>
-                      {['text', 'textarea', 'checkbox', 'dropdown', 'multiselect', 'number', 'date'].map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
+                    <div style={{ position: 'relative' }}>
+                      <div 
+                        onClick={() => setFieldDropdownOpen(!fieldDropdownOpen)}
+                        style={{ 
+                          width: '100%', padding: '16px', background: 'rgba(0,0,0,0.4)', 
+                          border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)',
+                          color: '#fff', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                        }}
+                      >
+                        {fieldForm.fieldType}
+                        <span style={{ transform: fieldDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▼</span>
+                      </div>
+                      {fieldDropdownOpen && (
+                        <div style={{
+                          position: 'absolute', top: '100%', left: 0, right: 0, marginTop: '8px',
+                          background: '#1a1a1a', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)',
+                          zIndex: 10, overflow: 'hidden'
+                        }}>
+                          {['text', 'textarea', 'checkbox', 'dropdown', 'multiselect', 'number', 'date'].map(t => (
+                            <div 
+                              key={t}
+                              onClick={() => { setFieldForm(f => ({ ...f, fieldType: t })); setFieldDropdownOpen(false); }}
+                              style={{ padding: '12px 16px', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.05)', background: fieldForm.fieldType === t ? 'rgba(255,255,255,0.1)' : 'transparent' }}
+                              onMouseEnter={(e) => e.target.style.background = 'rgba(255,255,255,0.05)'}
+                              onMouseLeave={(e) => e.target.style.background = fieldForm.fieldType === t ? 'rgba(255,255,255,0.1)' : 'transparent'}
+                            >
+                              {t}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
+                  {['dropdown', 'multiselect'].includes(fieldForm.fieldType) && (
+                    <div className="form-group" style={{ animation: 'fadeIn 0.2s ease-out' }}>
+                      <label className="form-label">Options (comma separated) *</label>
+                      <textarea 
+                        placeholder="Option 1, Option 2, Option 3" 
+                        value={fieldForm.options} 
+                        onChange={e => setFieldForm(f => ({ ...f, options: e.target.value }))} 
+                        required 
+                        style={{ width: '100%', padding: '16px', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', color: '#fff', minHeight: '80px', resize: 'vertical' }}
+                      />
+                    </div>
+                  )}
                   <label className="checkbox-row" style={{ color: 'var(--text-secondary)' }}>
                     <input type="checkbox" checked={fieldForm.required} onChange={e => setFieldForm(f => ({ ...f, required: e.target.checked }))} />
                     <span className="checkbox-label" style={{ marginLeft: '12px' }}>Mandatory Field</span>
@@ -483,9 +541,14 @@ export default function AdminDashboard() {
                         <div style={{ fontWeight: 800, color: '#fff', fontSize: '1.1rem' }}>{f.fieldLabel}</div>
                         <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '6px' }}>Key: {f.fieldKey} · Type: {f.fieldType} {f.required ? '(Required)' : ''}</div>
                       </div>
-                      <button className={`btn ${f.enabled ? 'btn-dark' : 'btn-primary'}`} style={{ padding: '8px 16px', borderRadius: 'var(--radius-xl)' }} onClick={() => toggleField(f._id, f.enabled)}>
-                        {f.enabled ? <><ToggleRight size={16}/> Disable</> : <><ToggleLeft size={16}/> Enable</>}
-                      </button>
+                      <div style={{ display: 'flex', gap: '12px' }}>
+                        <button className={`btn ${f.enabled ? 'btn-dark' : 'btn-primary'}`} style={{ padding: '8px 16px', borderRadius: 'var(--radius-xl)' }} onClick={() => toggleField(f._id, f.enabled)}>
+                          {f.enabled ? <><ToggleRight size={16}/> Disable</> : <><ToggleLeft size={16}/> Enable</>}
+                        </button>
+                        <button className="btn btn-danger" style={{ padding: '8px 16px', borderRadius: 'var(--radius-xl)' }} onClick={() => removeField(f._id)}>
+                          <Trash2 size={16}/> Delete
+                        </button>
+                      </div>
                     </div>
                   ))
                 )}

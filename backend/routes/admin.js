@@ -393,6 +393,28 @@ router.patch('/fields/:id', async (req, res) => {
   }
 });
 
+// ─── DELETE FIELD ────────────────────────────────────────────────────────
+router.delete('/fields/:id', async (req, res) => {
+  try {
+    const field = await FormField.findById(req.params.id);
+    if (!field) return res.status(404).json({ message: 'Field not found' });
+
+    await FormField.findByIdAndDelete(req.params.id);
+
+    await AuditLog.create({
+      actorEmail: req.user.email,
+      actorRole:  'admin',
+      action:     'DELETE_FIELD',
+      details:    `Deleted field: ${field.fieldLabel} (${field.fieldKey})`,
+    });
+
+    res.json({ message: 'Field deleted successfully' });
+  } catch (err) {
+    console.error('[Admin/fields DELETE]', err);
+    res.status(500).json({ message: 'An error occurred.' });
+  }
+});
+
 // ─── AUDIT LOGS ───────────────────────────────────────────────────────
 
 router.get('/audit-logs', async (req, res) => {
