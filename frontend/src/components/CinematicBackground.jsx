@@ -6,8 +6,8 @@ export default function CinematicBackground({
   particleSize = 0.15,
   particleColor = 0xffffff,
   particleOpacity = 0.8,
-  rotationSpeedY = 0.002,
-  rotationSpeedX = 0.001,
+  rotationSpeedY = 0.0005,
+  rotationSpeedX = 0.0002,
   mouseSensitivity = 0.1,
   background = 'radial-gradient(circle at center, #111111 0%, #050505 100%)'
 }) {
