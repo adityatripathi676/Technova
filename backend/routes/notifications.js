@@ -3,11 +3,19 @@ const router = express.Router();
 const PushSubscription = require('../models/PushSubscription');
 const webpush = require('web-push');
 
-webpush.setVapidDetails(
-  process.env.VAPID_SUBJECT,
-  process.env.VAPID_PUBLIC_KEY,
-  process.env.VAPID_PRIVATE_KEY
-);
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  try {
+    webpush.setVapidDetails(
+      process.env.VAPID_SUBJECT || 'mailto:admin@technova.com',
+      process.env.VAPID_PUBLIC_KEY,
+      process.env.VAPID_PRIVATE_KEY
+    );
+  } catch (err) {
+    console.error('[Notifications] Failed to initialize VAPID details:', err.message);
+  }
+} else {
+  console.warn('[Notifications] VAPID keys are missing from environment. Push notifications are disabled.');
+}
 
 // Public route to save a user's subscription
 router.post('/subscribe', async (req, res) => {
