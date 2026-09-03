@@ -26,7 +26,7 @@ export default function ConfirmModal({ isOpen, title, message, onConfirm, onCanc
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           style={{
-            background: 'var(--surface)',
+            background: 'var(--bg-surface)',
             border: '1px solid var(--border)',
             borderRadius: 'var(--radius-lg)',
             padding: '24px',
@@ -37,12 +37,12 @@ export default function ConfirmModal({ isOpen, title, message, onConfirm, onCanc
         >
           <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center' }}>
             {type === 'danger' ? (
-              <div style={{ background: 'rgba(239,68,68,0.1)', padding: '16px', borderRadius: '50%' }}>
-                <AlertCircle size={32} color="var(--error)" />
+              <div style={{ background: 'rgba(251,113,133,0.1)', padding: '16px', borderRadius: '50%' }}>
+                <AlertCircle size={32} color="var(--rose)" />
               </div>
             ) : (
-              <div style={{ background: 'rgba(16,185,129,0.1)', padding: '16px', borderRadius: '50%' }}>
-                <CheckCircle size={32} color="var(--success)" />
+              <div style={{ background: 'rgba(52,211,153,0.1)', padding: '16px', borderRadius: '50%' }}>
+                <CheckCircle size={32} color="var(--emerald)" />
               </div>
             )}
           </div>
@@ -61,7 +61,7 @@ export default function ConfirmModal({ isOpen, title, message, onConfirm, onCanc
             <button 
               onClick={onConfirm}
               className={`btn ${type === 'danger' ? 'btn-danger' : 'btn-primary'}`}
-              style={{ flex: 1, padding: '10px', background: type === 'danger' ? 'var(--error)' : 'var(--primary)', color: '#fff', border: 'none' }}
+              style={{ flex: 1, padding: '10px', background: type === 'danger' ? 'var(--rose)' : 'var(--primary)', color: type === 'danger' ? '#fff' : '#000', border: 'none' }}
             >
               {confirmText}
             </button>

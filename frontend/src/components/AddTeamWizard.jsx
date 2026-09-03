@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronRight, ChevronLeft, Upload, Check, ImageIcon } from 'lucide-react';
 import Cropper from 'react-easy-crop';
@@ -51,9 +51,9 @@ async function getCroppedImg(imageSrc, pixelCrop, filter = 'none') {
   return canvas.toDataURL('image/jpeg', 0.6);
 }
 
-export default function AddTeamWizard({ isOpen, onClose, onSubmit }) {
+export default function AddTeamWizard({ isOpen, onClose, onSubmit, initialData }) {
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState({ name: '', role: '', email: '', phone: '', department: '', bio: '', image: '', linkedinUrl: '', githubUrl: '' });
+  const [form, setForm] = useState(initialData || { name: '', role: '', email: '', phone: '', department: '', bio: '', image: '', linkedinUrl: '', githubUrl: '' });
   
   // Image Step State
   const [imageSrc, setImageSrc] = useState(null);
@@ -62,6 +62,17 @@ export default function AddTeamWizard({ isOpen, onClose, onSubmit }) {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState('none');
   const [isProcessingImage, setIsProcessingImage] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setStep(1);
+      setForm(initialData || { name: '', role: '', email: '', phone: '', department: '', bio: '', image: '', linkedinUrl: '', githubUrl: '' });
+      setImageSrc(null);
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setSelectedFilter('none');
+    }
+  }, [isOpen, initialData]);
 
   if (!isOpen) return null;
 
@@ -118,14 +129,14 @@ export default function AddTeamWizard({ isOpen, onClose, onSubmit }) {
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', width: '90%', maxWidth: '600px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+        style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', width: '90%', maxWidth: '600px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', borderBottom: '1px solid var(--border)' }}>
-          <h2 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--text-primary)' }}>Add Operational Officer</h2>
+          <h2 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--text-primary)' }}>{initialData ? 'Edit' : 'Add'} Operational Officer</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}><X size={24} /></button>
         </div>
 
-        <div style={{ padding: '20px', display: 'flex', gap: '8px', borderBottom: '1px solid var(--border)', background: 'var(--bg)' }}>
+        <div style={{ padding: '20px', display: 'flex', gap: '8px', borderBottom: '1px solid var(--border)', background: 'var(--bg-body)' }}>
           {[1,2,3,4].map(i => (
             <div key={i} style={{ flex: 1, height: '4px', background: step >= i ? 'var(--primary)' : 'var(--border)', borderRadius: '2px', transition: 'all 0.3s ease' }} />
           ))}
@@ -174,7 +185,7 @@ export default function AddTeamWizard({ isOpen, onClose, onSubmit }) {
                         <button 
                           key={f.name}
                           onClick={() => setSelectedFilter(f.filter)}
-                          style={{ padding: '8px', background: selectedFilter === f.filter ? 'var(--primary)' : 'var(--surface-hover)', border: '1px solid', borderColor: selectedFilter === f.filter ? 'var(--primary)' : 'var(--border)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)', cursor: 'pointer', transition: 'all 0.2s' }}
+                          style={{ padding: '8px', background: selectedFilter === f.filter ? 'var(--primary)' : 'var(--bg-card-hover)', border: '1px solid', borderColor: selectedFilter === f.filter ? 'var(--primary)' : 'var(--border)', borderRadius: 'var(--radius-sm)', color: selectedFilter === f.filter ? '#000' : 'var(--text-primary)', cursor: 'pointer', transition: 'all 0.2s' }}
                         >
                           {f.name}
                         </button>
@@ -210,14 +221,14 @@ export default function AddTeamWizard({ isOpen, onClose, onSubmit }) {
 
             {step === 4 && (
               <motion.div key="step4" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} style={{ textAlign: 'center', padding: '20px 0' }}>
-                <Check size={48} color="var(--success)" style={{ marginBottom: '16px' }} />
+                <Check size={48} color="var(--emerald)" style={{ marginBottom: '16px' }} />
                 <h3 style={{ margin: '0 0 10px 0', fontSize: '1.5rem' }}>Ready to Submit</h3>
-                <p style={{ color: 'var(--text-secondary)' }}>You are about to add <strong>{form.name}</strong> as an Operational Officer.</p>
+                <p style={{ color: 'var(--text-secondary)' }}>You are about to {initialData ? 'update' : 'add'} <strong>{form.name}</strong>.</p>
                 <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginTop: '24px' }}>
                   {form.image ? (
                     <img src={form.image} alt="Profile" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--border)' }} />
                   ) : (
-                    <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--surface-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--border)' }}><ImageIcon size={32} color="var(--text-secondary)" /></div>
+                    <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--bg-card-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--border)' }}><ImageIcon size={32} color="var(--text-secondary)" /></div>
                   )}
                   <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                     <strong>{form.name || 'Unnamed'}</strong>
@@ -230,7 +241,7 @@ export default function AddTeamWizard({ isOpen, onClose, onSubmit }) {
           </AnimatePresence>
         </div>
 
-        <div style={{ padding: '20px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', background: 'var(--bg)' }}>
+        <div style={{ padding: '20px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', background: 'var(--bg-body)' }}>
           {step > 1 ? (
             <button onClick={handlePrev} className="btn btn-secondary"><ChevronLeft size={16} /> Back</button>
           ) : <div></div>}
@@ -248,8 +259,8 @@ export default function AddTeamWizard({ isOpen, onClose, onSubmit }) {
                 Next <ChevronRight size={16} />
               </button>
             ) : (
-              <button onClick={finalSubmit} className="btn btn-primary" style={{ background: 'var(--success)' }}>
-                <Check size={16} /> Add Officer
+              <button onClick={finalSubmit} className="btn btn-primary" style={{ background: 'var(--emerald)', color: '#000' }}>
+                <Check size={16} /> {initialData ? 'Save Changes' : 'Add Officer'}
               </button>
             )}
           </div>

@@ -64,7 +64,8 @@ export default function AdminDashboard() {
 
   // Modals & Wizards
   const [confirmConfig, setConfirmConfig] = useState({ isOpen: false, title: '', message: '', type: 'danger', confirmText: 'Confirm', onConfirm: null });
-  const [showAddTeamWizard, setShowAddTeamWizard] = useState(false);
+  const [showTeamWizard, setShowTeamWizard] = useState(false);
+  const [teamWizardInitialData, setTeamWizardInitialData] = useState(null);
 
   const flash = useCallback((m) => {
     setMsg(m);
@@ -128,14 +129,19 @@ export default function AdminDashboard() {
     catch (err) { flash('❌ ' + (err.response?.data?.message || 'Password reset failed')); }
   };
 
-  const handleAddTeamWizardSubmit = async (formData) => {
+  const handleTeamWizardSubmit = async (formData) => {
     try { 
-      await API.post('/admin/team', formData); 
-      flash('✅ Operational team member added'); 
-      setShowAddTeamWizard(false);
+      setShowTeamWizard(false);
+      if (teamWizardInitialData) {
+        await API.patch(`/admin/team/${teamWizardInitialData._id}`, formData);
+        flash('✅ Operational team member updated');
+      } else {
+        await API.post('/admin/team', formData); 
+        flash('✅ Operational team member added'); 
+      }
       load(); 
     }
-    catch (err) { flash('❌ ' + (err.response?.data?.message || 'Failed to add team member')); }
+    catch (err) { flash('❌ ' + (err.response?.data?.message || 'Failed to save team member')); }
   };
 
   const handleImageUpload = (e, setFormFunc) => {
@@ -152,34 +158,7 @@ export default function AdminDashboard() {
     reader.readAsDataURL(file);
   };
 
-  const startEditTeam = (m) => {
-    setEditTeam(m._id);
-    setEditTeamForm({
-      name: m.name, role: m.role, email: m.email, phone: m.phone,
-      department: m.department || '', bio: m.bio || '', image: m.image || '',
-      linkedinUrl: m.linkedinUrl || '', githubUrl: m.githubUrl || ''
-    });
-  };
-
-  const submitEditTeam = (e, id) => {
-    e.preventDefault();
-    setConfirmConfig({
-      isOpen: true, title: 'Update Team Member', message: 'Are you sure you want to save changes to this team member?', type: 'primary', confirmText: 'Save Changes',
-      onConfirm: async () => {
-        setConfirmConfig(c => ({ ...c, isOpen: false }));
-        try {
-          await API.patch(`/admin/team/${id}`, editTeamForm);
-          flash('✅ Team member details updated');
-          setEditTeam(null);
-          load();
-        } catch (err) { 
-          const backendMsg = err.response?.data?.message;
-          flash(`❌ Update failed: ${backendMsg || err.message}`);
-        }
-      }
-    });
-  };
-
+  // Removed inline edit functions as wizard is now used
   const removeTeam = (id) => {
     setConfirmConfig({
       isOpen: true, title: 'Remove Team Member', message: 'Permanently remove this team member from directory?', type: 'danger', confirmText: 'Remove',
@@ -383,7 +362,7 @@ export default function AdminDashboard() {
                   <div className="section-title" style={{ border: 'none', padding: 0, margin: 0, marginBottom: '8px' }}><Users size={20}/> Personnel Directory ({team.filter(m => m.isActive).length} Active)</div>
                   <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Manage operational officers and their details.</p>
                 </div>
-                <button onClick={() => setShowAddTeamWizard(true)} className="btn btn-primary" style={{ padding: '12px 24px', borderRadius: 'var(--radius-xl)' }}><UserPlus size={18}/> Add Member</button>
+                <button onClick={() => { setTeamWizardInitialData(null); setShowTeamWizard(true); }} className="btn btn-primary" style={{ padding: '12px 24px', borderRadius: 'var(--radius-xl)' }}><UserPlus size={18}/> Add Member</button>
               </div>
 
               <div className="glass-card">
@@ -392,31 +371,6 @@ export default function AdminDashboard() {
                 ) : (
                   team.filter(m => m.isActive).map(m => (
                     <div key={m._id} style={{ padding: '20px 0', borderBottom: '1px solid var(--border)' }}>
-                      {editTeam === m._id ? (
-                        <form onSubmit={(e) => submitEditTeam(e, m._id)} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                          <div style={{ fontWeight: 800, color: 'var(--text-secondary)', marginBottom: '8px' }}>Edit Team Member</div>
-                          <div className="form-grid form-grid-2">
-                            <div className="form-group"><label className="form-label">Full Name *</label><input value={editTeamForm.name} onChange={e => setEditTeamForm(f => ({ ...f, name: e.target.value }))} required /></div>
-                            <div className="form-group"><label className="form-label">Role Title *</label><input value={editTeamForm.role} onChange={e => setEditTeamForm(f => ({ ...f, role: e.target.value }))} required /></div>
-                            <div className="form-group"><label className="form-label">Email Address *</label><input type="email" value={editTeamForm.email} onChange={e => setEditTeamForm(f => ({ ...f, email: e.target.value }))} required /></div>
-                            <div className="form-group"><label className="form-label">Phone Number *</label><input value={editTeamForm.phone} onChange={e => setEditTeamForm(f => ({ ...f, phone: e.target.value }))} required /></div>
-                            <div className="form-group"><label className="form-label">Department</label><input value={editTeamForm.department} onChange={e => setEditTeamForm(f => ({ ...f, department: e.target.value }))} /></div>
-                            <div className="form-group">
-                              <label className="form-label">Profile Image (Max 10MB)</label>
-                              <DragDropImageUpload value={editTeamForm.image || ''} onChange={(val) => setEditTeamForm(f => ({ ...f, image: val }))} />
-                            </div>
-                          </div>
-                          <div className="form-group"><label className="form-label">Short Bio</label><textarea rows={2} value={editTeamForm.bio} onChange={e => setEditTeamForm(f => ({ ...f, bio: e.target.value }))} /></div>
-                          <div className="form-grid form-grid-2">
-                            <div className="form-group"><label className="form-label">LinkedIn URL</label><input value={editTeamForm.linkedinUrl} onChange={e => setEditTeamForm(f => ({ ...f, linkedinUrl: e.target.value }))} /></div>
-                            <div className="form-group"><label className="form-label">GitHub URL</label><input value={editTeamForm.githubUrl} onChange={e => setEditTeamForm(f => ({ ...f, githubUrl: e.target.value }))} /></div>
-                          </div>
-                          <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
-                            <button type="submit" className="btn btn-primary" style={{ padding: '8px 20px', borderRadius: 'var(--radius-lg)' }}><Check size={16}/> Save Changes</button>
-                            <button type="button" className="btn" style={{ padding: '8px 20px', borderRadius: 'var(--radius-lg)' }} onClick={() => setEditTeam(null)}><X size={16}/> Cancel</button>
-                          </div>
-                        </form>
-                      ) : (
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                             {m.image ? (
@@ -829,7 +783,7 @@ export default function AdminDashboard() {
       </div>
       
       <ConfirmModal {...confirmConfig} onCancel={() => setConfirmConfig(c => ({ ...c, isOpen: false }))} />
-      <AddTeamWizard isOpen={showAddTeamWizard} onClose={() => setShowAddTeamWizard(false)} onSubmit={handleAddTeamWizardSubmit} />
+      <AddTeamWizard isOpen={showTeamWizard} onClose={() => setShowTeamWizard(false)} onSubmit={handleTeamWizardSubmit} initialData={teamWizardInitialData} />
     </>
   );
 }
