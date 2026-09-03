@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema({
 
   // ── Profile ─────────────────────────────────────────────────────
   profilePicture: { type: String, default: '' }, // base64 data URL
+  phone:          { type: String, default: '', trim: true },
+  designation:    { type: String, default: '', trim: true },
 
   // ── Brute-force / lockout tracking ──────────────────────────────
   failedLoginAttempts: { type: Number, default: 0 },

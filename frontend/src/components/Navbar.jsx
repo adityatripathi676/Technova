@@ -35,8 +35,8 @@ export default function Navbar() {
             <img src="/logo-bw.png" alt="Technova Logo" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
           </div>
           <div>
-            <span className="font-heading" style={{ fontSize: '1.1rem', fontWeight: 900, letterSpacing: '-0.02em', color: '#ffffff' }}>TECHNOVA</span>
-            <span className="hide-on-tablet" style={{ color: 'var(--text-muted)', fontSize: '0.7rem', display: 'block', fontWeight: 700, marginTop: '-2px', letterSpacing: '0.05em' }}>MANAV RACHNA INTERNATIONAL INSTITUTE OF RESEARCH AND STUDIES</span>
+            <span className="font-heading" style={{ fontSize: '1rem', fontWeight: 900, letterSpacing: '-0.02em', color: '#ffffff' }}>TECHNOVA</span>
+            <span className="hide-on-tablet" style={{ color: 'var(--text-muted)', fontSize: '0.55rem', display: 'block', fontWeight: 700, marginTop: '-2px', letterSpacing: '0.05em' }}>MANAV RACHNA INTERNATIONAL INSTITUTE OF RESEARCH AND STUDIES</span>
           </div>
         </Link>
 

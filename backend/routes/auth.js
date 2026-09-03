@@ -81,7 +81,7 @@ router.post('/login', async (req, res) => {
     // Return minimal user info — never include passwordHash
     res.json({
       token,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role, profilePicture: user.profilePicture },
+      user: { id: user._id, name: user.name, email: user.email, role: user.role, profilePicture: user.profilePicture, phone: user.phone, designation: user.designation },
     });
   } catch (err) {
     // Never expose internal error messages to the client
@@ -148,7 +148,7 @@ router.post('/change-password', protect, async (req, res) => {
 // PATCH /api/auth/profile — update profile (e.g. profile picture)
 router.patch('/profile', protect, async (req, res) => {
   try {
-    const { profilePicture } = req.body;
+    const { profilePicture, name, phone, designation } = req.body;
 
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
@@ -160,6 +160,10 @@ router.patch('/profile', protect, async (req, res) => {
       }
       user.profilePicture = profilePicture;
     }
+    
+    if (name !== undefined) user.name = name;
+    if (phone !== undefined) user.phone = phone;
+    if (designation !== undefined) user.designation = designation;
 
     await user.save();
 
@@ -175,7 +179,7 @@ router.get('/me', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-passwordHash -failedLoginAttempts -lockedUntil -__v');
     if (!user) return res.status(404).json({ message: 'User not found' });
-    res.json({ id: user._id, name: user.name, email: user.email, role: user.role, profilePicture: user.profilePicture });
+    res.json({ id: user._id, name: user.name, email: user.email, role: user.role, profilePicture: user.profilePicture, phone: user.phone, designation: user.designation });
   } catch (err) {
     console.error('[Auth/me]', err);
     res.status(500).json({ message: 'An error occurred' });
