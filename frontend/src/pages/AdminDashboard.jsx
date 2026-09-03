@@ -498,22 +498,26 @@ export default function AdminDashboard() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
                 <div className="section-title" style={{ margin: 0 }}><ScrollText size={24}/> System Immutable Audit Log</div>
-                
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                  {showGlobalSearch && (
+                  <motion.div
+                    initial={{ width: 0, opacity: 0 }}
+                    animate={{ width: showGlobalSearch ? 250 : 0, opacity: showGlobalSearch ? 1 : 0 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    style={{ overflow: 'hidden' }}
+                  >
                     <input 
                       type="text" 
                       placeholder="Search..." 
-                      autoFocus
+                      autoFocus={showGlobalSearch}
                       value={globalSearch} 
                       onChange={e => setGlobalSearch(e.target.value)} 
-                      style={{ padding: '8px 16px', borderRadius: '40px', border: '1px solid var(--border)', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: '0.9rem' }} 
+                      style={{ width: '100%', padding: '8px 16px', borderRadius: '40px', border: '1px solid var(--border)', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: '0.9rem' }} 
                     />
-                  )}
+                  </motion.div>
                   <button className="btn btn-dark" style={{ padding: '8px', borderRadius: '50%' }} onClick={() => setShowGlobalSearch(!showGlobalSearch)}>
                     <Search size={16} />
                   </button>
-                  <span className="badge" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 16px', borderRadius: '40px' }}>{logTotal} Total Audit Entries</span>
+                  <span className="badge" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', padding: '8px 16px', borderRadius: '40px', whiteSpace: 'nowrap' }}>{logTotal} Total Audit Entries</span>
                 </div>
               </div>
 
