@@ -75,6 +75,7 @@ export default function GlobalShortcuts() {
         setShowHelp(false);
         setShowSearch(false);
         setShowDevOptions(false);
+        window.dispatchEvent(new Event('close-modals'));
         return;
       }
 
