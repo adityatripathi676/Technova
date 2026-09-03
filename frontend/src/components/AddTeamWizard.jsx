@@ -74,6 +74,10 @@ export default function AddTeamWizard({ isOpen, onClose, onSubmit, initialData }
     }
   }, [isOpen, initialData]);
 
+  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
   if (!isOpen) return null;
 
   const handleNext = () => setStep(s => Math.min(s + 1, 4));
@@ -95,10 +99,6 @@ export default function AddTeamWizard({ isOpen, onClose, onSubmit, initialData }
       reader.readAsDataURL(file);
     }
   };
-
-  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
 
   const saveImageAndNext = async () => {
     if (imageSrc && croppedAreaPixels) {
