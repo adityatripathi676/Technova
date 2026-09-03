@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Briefcase, Code, Mail, MapPin, Users } from 'lucide-react';
 import API from '../api/axios';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import CinematicBackground from '../components/CinematicBackground';
 
 export default function LeadersPage() {
@@ -107,44 +108,7 @@ export default function LeadersPage() {
           )}
         </div>
 
-        {/* ── FOOTER STRICTLY #2D2D2D ── */}
-        <footer style={{ background: '#2D2D2D', padding: '80px 0 30px', position: 'relative', zIndex: 10 }}>
-          <div className="container">
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '60px', marginBottom: '60px' }}>
-              <div style={{ gridColumn: 'span 2' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '1.8rem', fontWeight: 900, color: '#fff', marginBottom: '20px', letterSpacing: '-0.02em' }}>
-                  <img src="/logo-bw.png" alt="Technova Logo BW" style={{ width: '48px', height: '48px', objectFit: 'contain' }} /> TECHNOVA
-                </div>
-                <p style={{ color: '#94a3b8', fontSize: '0.95rem', maxWidth: '400px', lineHeight: '1.7', marginBottom: '32px' }}>
-                  Technova — The Official Technical Society of Manav Rachna International Institute of Research and Studies (MRIIRS), Sector 43, Aravalli Hills, Delhi-Surajkund Road, Faridabad, Haryana 121004.
-                </p>
-              </div>
-
-              <div>
-                <div style={{ color: '#fff', fontWeight: 800, fontSize: '1.1rem', marginBottom: '24px', letterSpacing: '0.05em' }}>Platform</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  {[['/', 'Overview'], ['/leaders', 'Our Leaders'], ['/events', 'Events Calendar'], ['/portal', 'Request Portal']].map(([href, label]) => (
-                    <a key={href} href={href} style={{ color: '#94a3b8', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = '#94a3b8'}>{label}</a>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <div style={{ color: '#fff', fontWeight: 800, fontSize: '1.1rem', marginBottom: '24px', letterSpacing: '0.05em' }}>Authority</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  {[['/login', 'Sign In'], ['/approver', 'Approver Workspace'], ['/admin', 'Command Center']].map(([href, label]) => (
-                    <a key={href} href={href} style={{ color: '#94a3b8', textDecoration: 'none', transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#fff'} onMouseOut={e => e.currentTarget.style.color = '#94a3b8'}>{label}</a>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div style={{ padding: '24px 0 0', borderTop: '1px solid rgba(255, 255, 255, 0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem', color: '#64748b', flexWrap: 'wrap', gap: '10px' }}>
-              <div>© 2026 Technova — Manav Rachna International Institute of Research and Studies Technical Society. All rights reserved.</div>
-              <a href="#top" style={{ color: '#64748b', textDecoration: 'none', fontWeight: 600 }}>Back to Top ↑</a>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );

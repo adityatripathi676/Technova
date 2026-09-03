@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Calendar, Search, Shield, Zap, Users, Crosshair, ChevronDown, Activity, FileText } from 'lucide-react';
 import API from '../api/axios';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import StatusBadge from '../components/StatusBadge';
 import CinematicBackground from '../components/CinematicBackground';
 
@@ -362,57 +363,7 @@ export default function Home() {
 
         </div>
 
-        {/* ── FOOTER STRICTLY #2D2D2D COLOR REQUIREMENT ── */}
-        <footer className="site-footer">
-          <div className="container">
-            <div className="footer-grid">
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '1.8rem', fontWeight: 900, color: '#fff', marginBottom: '16px', letterSpacing: '-0.02em' }}>
-                  <img src="/logo-bw.png" alt="Technova Logo BW" style={{ width: '48px', height: '48px', objectFit: 'contain' }} /> TECHNOVA
-                </div>
-                <p style={{ color: '#94a3b8', fontSize: '0.95rem', maxWidth: '360px', lineHeight: '1.7' }}>
-                  Technova — The Official Technical Society of Manav Rachna International Institute of Research and Studies (MRIIRS), Sector 43, Aravalli Hills, Delhi-Surajkund Road, Faridabad, Haryana 121004.
-                </p>
-              </div>
-
-              <div>
-                <div className="footer-title">Platform</div>
-                <div className="footer-links">
-                  <Link to="/" className="footer-link"><Activity size={16}/> Overview</Link>
-                  <Link to="/leaders" className="footer-link"><Users size={16}/> Our Leaders</Link>
-                  <Link to="/events" className="footer-link"><Calendar size={16}/> Events Calendar</Link>
-                  <Link to="/portal" className="footer-link"><FileText size={16}/> Request Portal</Link>
-                </div>
-              </div>
-
-              <div>
-                <div className="footer-title">Authority</div>
-                <div className="footer-links">
-                  <Link to="/login" className="footer-link"><Shield size={16}/> Sign In</Link>
-                  <Link to="/approver" className="footer-link"><Shield size={16}/> Approver Workspace</Link>
-                  <Link to="/admin" className="footer-link"><Shield size={16}/> Command Center</Link>
-                </div>
-              </div>
-
-              <div>
-                <div className="footer-title">Campus Hub</div>
-                <div className="footer-links" style={{ color: '#94a3b8' }}>
-                  <span>Manav Rachna International Institute of Research and Studies</span>
-                  <span>Faculty of Engg & Tech</span>
-                  <span>Department of CST</span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#34d399', marginTop: '8px', fontWeight: 600 }}>
-                    <span style={{ width: '8px', height: '8px', background: '#34d399', borderRadius: '50%' }}/> Operational
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div style={{ padding: '24px 0 0', borderTop: '1px solid rgba(255, 255, 255, 0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem', color: '#94a3b8', flexWrap: 'wrap', gap: '16px' }}>
-              <div>© 2026 Technova — Manav Rachna International Institute of Research and Studies Technical Society. All rights reserved.</div>
-              <a href="#top" style={{ color: '#ffffff', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>Back to Top <ArrowRight size={14} style={{ transform: 'rotate(-90deg)' }}/></a>
-            </div>
-          </div>
-        </footer>
+        <Footer />
 
       </div>
     </>
